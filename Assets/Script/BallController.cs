@@ -9,16 +9,15 @@ public class BallController : MonoBehaviour
     [SerializeField] private float dribbleSpeed = 5f;
     private Rigidbody rb;
 
-    public PlayerController Owner { get; private set; }
-
+    public MonoBehaviour Owner { get; private set; }
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
 
-    public void SetOwner(PlayerController player)
+    public void SetOwner(MonoBehaviour owner)
     {
-        Owner = player;
+        Owner = owner;
     }
 
     public void ClearOwner()
@@ -33,7 +32,8 @@ public class BallController : MonoBehaviour
 
         Vector3 target =
             Owner.transform.position +
-            Owner.transform.forward * 0.5f;
+            Owner.transform.forward * 0.8f
+            +Vector3.up*0.2f;
 
         Vector3 dir = target - transform.position;
 
