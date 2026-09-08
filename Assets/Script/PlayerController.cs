@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float shootChargeSpeed = 20f;
     [SerializeField] private float pickupCooldown = 0.3f;
 
+    private Vector3 startPosition;
+    private Quaternion startRotation;
     private float shootPower;
     private bool chargingShoot;
     private float pickupTimer = 0f;
@@ -80,6 +82,11 @@ public class PlayerController : MonoBehaviour
     private void OnDash(InputAction.CallbackContext context)
     {
         isDash = context.ReadValueAsButton();
+    }
+    private void Start()
+    {
+        startPosition = transform.position;
+        startRotation=transform.rotation;
     }
     private void Update()
     {
@@ -171,5 +178,14 @@ public class PlayerController : MonoBehaviour
         currentBall = null;
 
         pickupTimer = pickupCooldown;
+    }
+
+    public void ResetPosition()
+    {
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        transform.position = startPosition;
+        transform.rotation = startRotation;
     }
 }

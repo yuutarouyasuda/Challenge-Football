@@ -2,24 +2,13 @@ using UnityEngine;
 
 public class GoalTrigger : MonoBehaviour
 {
-    public int score = 0;
+    [SerializeField] private bool isHomeGoal;
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Ball"))
-        {
-            score++;
+        if (!other.CompareTag("Ball"))
+            return;
 
-            Debug.Log("GOAL!!");
-            Debug.Log("Score : " + score);
-
-            //É{Å[ÉãÇèâä˙à íuÇ÷ñﬂÇ∑
-            other.transform.position = new Vector3(0, 1, -10);
-
-            Rigidbody rb=other.GetComponent<Rigidbody>();
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
+        GameManager.Instance.Goal(isHomeGoal, other.GetComponent<Rigidbody>());
     }
-    
 }
