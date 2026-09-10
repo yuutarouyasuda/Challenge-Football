@@ -25,7 +25,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pass",
+                    "name": "GroundKick",
                     "type": "Button",
                     "id": "72d10377-cd65-4e44-88c1-43b58335608b",
                     "expectedControlType": "",
@@ -34,7 +34,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shoot",
+                    "name": "LobKick",
                     "type": "Button",
                     "id": "120b019e-c8cb-424e-81d0-ce5b04163e42",
                     "expectedControlType": "",
@@ -128,18 +128,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Pass",
+                    "action": "GroundKick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "c402a619-9718-4858-a2bf-5aa98283e088",
-                    "path": "<Keyboard>/space",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "LobKick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

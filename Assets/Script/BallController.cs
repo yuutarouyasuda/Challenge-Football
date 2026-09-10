@@ -7,8 +7,15 @@ public class BallController : MonoBehaviour
     [SerializeField] private float controlDistance = 1.2f;
     [SerializeField] private float dribbleForce = 30f;
     [SerializeField] private float dribbleSpeed = 5f;
-    private Rigidbody rb;
+    [SerializeField] private float lobHeight = 0.6f;
+    [SerializeField] private float stealCooldown = 0.5f;
 
+    private float stealTimer;
+    private Rigidbody rb;
+    public bool CanSteal
+    {
+        get { return stealTimer <= 0f; }
+    }
     public MonoBehaviour Owner { get; private set; }
     private void Awake()
     {
@@ -18,11 +25,19 @@ public class BallController : MonoBehaviour
     public void SetOwner(MonoBehaviour owner)
     {
         Owner = owner;
+        stealTimer = stealCooldown;
     }
 
     public void ClearOwner()
     {
         Owner = null;
+    }
+    private void Update()
+    {
+        if(stealTimer>0)
+        {
+            stealTimer-= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -45,11 +60,24 @@ public class BallController : MonoBehaviour
                 dir.normalized.z * dribbleSpeed);
         }
     }
-    public void Kick(Vector3 direction,float power)
+    public void Kick(Vector3 direction,float power,bool isLob)
     {
         ClearOwner();
 
         rb.linearVelocity = Vector3.zero;
-        rb.AddForce(direction.normalized*power,ForceMode.Impulse);
+        rb.angularVelocity = Vector3.zero;
+        if(isLob)
+        {
+            //少し上方向を加える
+            Vector3 lobDir = direction.normalized + Vector3.up * lobHeight;
+            rb.AddForce(lobDir.normalized*power,ForceMode.Impulse);
+        }
+        else
+        {
+            //グラウンダー
+            direction.y = 0;
+            rb.AddForce(direction.normalized * power, ForceMode.Impulse);
+
+        }
     }
 }

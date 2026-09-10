@@ -7,22 +7,23 @@ public class PlayerController : MonoBehaviour
     [Header("Move")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashSpeed = 8f;
-    [Header("Pass")]
+    [Header("Gorund Kick")]
     [SerializeField] private float rotateSpeed = 10f;
-    [SerializeField] private float maxPassPower = 15f;
-    [SerializeField] private float chargeSpeed = 10f;
-    [Header("Shoot")]
-    [SerializeField] private float maxShootPower = 30f;
-    [SerializeField] private float shootChargeSpeed = 20f;
+    [SerializeField] private float maxGroundKickPower = 15f;
+    [SerializeField] private float GroundKickchargeSpeed = 10f;
+    [Header("Lob Kick")]
+    [SerializeField] private float maxLobKickPower = 30f;
+    [SerializeField] private float LobKickChargeSpeed = 20f;
     [SerializeField] private float pickupCooldown = 0.3f;
 
     private Vector3 startPosition;
     private Quaternion startRotation;
-    private float shootPower;
-    private bool chargingShoot;
     private float pickupTimer = 0f;
-    private float passPower;
-    private bool chargingPass;
+    private float groundKickPower;
+    private bool chargingGroundKick;
+
+    private float lobKickPower;
+    private bool chargingLobKick;
     private Rigidbody rb;
     private BallController currentBall;
     private PlayerInputActions inputActions;
@@ -50,11 +51,11 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Dash.performed += OnDash;
         inputActions.Player.Dash.canceled += OnDash;
 
-        inputActions.Player.Pass.started += OnPassStarted;
-        inputActions.Player.Pass.canceled += OnPassCanceled;
+        inputActions.Player.GroundKick.started += OnGroundKickStarted;
+        inputActions.Player.GroundKick.canceled += OnGroundKickCanceled;
 
-        inputActions.Player.Shoot.started += OnShootStarted;
-        inputActions.Player.Shoot.canceled += OnShootCanceled;
+        inputActions.Player.LobKick.started += OnLobKickStarted;
+        inputActions.Player.LobKick.canceled += OnLobKickCanceled;
     }
 
     private void OnDisable()
@@ -65,11 +66,11 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Dash.performed -= OnDash;
         inputActions.Player.Dash.canceled -= OnDash;
 
-        inputActions.Player.Pass.started -= OnPassStarted;
-        inputActions.Player.Pass.canceled -= OnPassCanceled;
+        inputActions.Player.GroundKick.started -= OnGroundKickStarted;
+        inputActions.Player.GroundKick.canceled -= OnGroundKickCanceled;
 
-        inputActions.Player.Shoot.started -= OnShootStarted;
-        inputActions.Player.Shoot.canceled -= OnShootCanceled;
+        inputActions.Player.LobKick.started -= OnLobKickStarted;
+        inputActions.Player.LobKick.canceled -= OnLobKickCanceled;
 
         inputActions.Disable();
     }
@@ -90,19 +91,23 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
-        if(chargingPass )
+        if (currentBall != null && currentBall.Owner != this)
         {
-            passPower += chargeSpeed * Time.deltaTime;
-            passPower=Mathf.Clamp(passPower,5f,maxPassPower);
+            currentBall = null;
+        }
+        if (chargingGroundKick)
+        {
+            groundKickPower += GroundKickchargeSpeed * Time.deltaTime;
+            groundKickPower = Mathf.Clamp(groundKickPower, 5f,maxGroundKickPower);
         }
         if(pickupTimer>0)
         {
             pickupTimer-=Time.deltaTime;
         }
-        if(chargingShoot)
+        if(chargingLobKick)
         {
-            shootPower += shootChargeSpeed * Time.deltaTime;
-            shootPower=Mathf.Clamp(shootPower,10f,maxShootPower);
+            lobKickPower += LobKickChargeSpeed * Time.deltaTime;
+            lobKickPower = Mathf.Clamp(lobKickPower, 10f,maxLobKickPower);
         }
     }
     private void FixedUpdate()
@@ -134,52 +139,75 @@ public class PlayerController : MonoBehaviour
 
         BallController ball =collision.gameObject.GetComponent<BallController>();
 
-        if (ball == null) return;
+        float stealDistance = 1.2f;
 
-        //ëºÇÃëIéËÇ™éùÇ¡ÇƒÇ¢Ç»ÇØÇÍÇŒï€éù
-        if(ball.Owner == null)
+        float distance = Vector3.Distance(
+            transform.position,
+            ball.transform.position);
+
+        if (distance < stealDistance)
         {
-            ball.SetOwner(this);
-            currentBall = ball;
+            if (ball.CanSteal&&ball.Owner != this)
+            {
+                ball.SetOwner(this);
+                currentBall = ball;
+            }
         }
     }
-    private void OnPassStarted(InputAction.CallbackContext ctx)
+    private Vector3 GetMouseDirection()
     {
-        chargingPass = true;
-        passPower = 0;
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Vector3 dir = hit.point - transform.position;
+            dir.y = 0;
+            return dir.normalized;
+        }
+
+        return transform.forward;
+    }
+    private void OnGroundKickStarted(InputAction.CallbackContext ctx)
+    {
+        chargingGroundKick = true;
+        groundKickPower = 0;
     }
 
-    private void OnPassCanceled(InputAction.CallbackContext ctx)
+    private void OnGroundKickCanceled(InputAction.CallbackContext ctx)
     {
-        chargingPass = false;
-
-        if(currentBall==null) return;
-
-        currentBall.Kick(transform.forward, passPower);
-        currentBall = null;
-
-        pickupTimer = pickupCooldown;
-    }
-    private void OnShootStarted(InputAction.CallbackContext ctx)
-    {
-        chargingShoot = true;
-        shootPower = 0f;
-    }
-
-    private void OnShootCanceled(InputAction.CallbackContext ctx)
-    {
-        chargingShoot = false;
+        chargingGroundKick = false;
 
         if (currentBall == null)
             return;
 
-        currentBall.Kick(transform.forward, shootPower);
+        Vector3 dir = GetMouseDirection();
+        transform.forward = dir;
+        currentBall.Kick(dir, groundKickPower,false);
 
         currentBall = null;
-
         pickupTimer = pickupCooldown;
     }
+    private void OnLobKickStarted(InputAction.CallbackContext ctx)
+    {
+        chargingLobKick = true;
+        lobKickPower = 0;
+    }
 
+    private void OnLobKickCanceled(InputAction.CallbackContext ctx)
+    {
+        chargingLobKick = false;
+
+        if (currentBall == null)
+            return;
+
+        Vector3 dir = GetMouseDirection();
+        dir.y = 0.5f;
+
+        currentBall.Kick(dir, lobKickPower,true);
+
+        currentBall = null;
+        pickupTimer = pickupCooldown;
+    }
     public void ResetPosition()
     {
         rb.linearVelocity = Vector3.zero;

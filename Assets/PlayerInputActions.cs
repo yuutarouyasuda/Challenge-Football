@@ -111,7 +111,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Pass"",
+                    ""name"": ""GroundKick"",
                     ""type"": ""Button"",
                     ""id"": ""72d10377-cd65-4e44-88c1-43b58335608b"",
                     ""expectedControlType"": """",
@@ -120,7 +120,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Shoot"",
+                    ""name"": ""LobKick"",
                     ""type"": ""Button"",
                     ""id"": ""120b019e-c8cb-424e-81d0-ce5b04163e42"",
                     ""expectedControlType"": """",
@@ -214,18 +214,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Pass"",
+                    ""action"": ""GroundKick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""c402a619-9718-4858-a2bf-5aa98283e088"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Shoot"",
+                    ""action"": ""LobKick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -238,8 +238,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
-        m_Player_Pass = m_Player.FindAction("Pass", throwIfNotFound: true);
-        m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
+        m_Player_GroundKick = m_Player.FindAction("GroundKick", throwIfNotFound: true);
+        m_Player_LobKick = m_Player.FindAction("LobKick", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -322,8 +322,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Dash;
-    private readonly InputAction m_Player_Pass;
-    private readonly InputAction m_Player_Shoot;
+    private readonly InputAction m_Player_GroundKick;
+    private readonly InputAction m_Player_LobKick;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -344,13 +344,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Pass".
+        /// Provides access to the underlying input action "Player/GroundKick".
         /// </summary>
-        public InputAction @Pass => m_Wrapper.m_Player_Pass;
+        public InputAction @GroundKick => m_Wrapper.m_Player_GroundKick;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Shoot".
+        /// Provides access to the underlying input action "Player/LobKick".
         /// </summary>
-        public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
+        public InputAction @LobKick => m_Wrapper.m_Player_LobKick;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -383,12 +383,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
-            @Pass.started += instance.OnPass;
-            @Pass.performed += instance.OnPass;
-            @Pass.canceled += instance.OnPass;
-            @Shoot.started += instance.OnShoot;
-            @Shoot.performed += instance.OnShoot;
-            @Shoot.canceled += instance.OnShoot;
+            @GroundKick.started += instance.OnGroundKick;
+            @GroundKick.performed += instance.OnGroundKick;
+            @GroundKick.canceled += instance.OnGroundKick;
+            @LobKick.started += instance.OnLobKick;
+            @LobKick.performed += instance.OnLobKick;
+            @LobKick.canceled += instance.OnLobKick;
         }
 
         /// <summary>
@@ -406,12 +406,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
-            @Pass.started -= instance.OnPass;
-            @Pass.performed -= instance.OnPass;
-            @Pass.canceled -= instance.OnPass;
-            @Shoot.started -= instance.OnShoot;
-            @Shoot.performed -= instance.OnShoot;
-            @Shoot.canceled -= instance.OnShoot;
+            @GroundKick.started -= instance.OnGroundKick;
+            @GroundKick.performed -= instance.OnGroundKick;
+            @GroundKick.canceled -= instance.OnGroundKick;
+            @LobKick.started -= instance.OnLobKick;
+            @LobKick.performed -= instance.OnLobKick;
+            @LobKick.canceled -= instance.OnLobKick;
         }
 
         /// <summary>
@@ -467,18 +467,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDash(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Pass" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "GroundKick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnPass(InputAction.CallbackContext context);
+        void OnGroundKick(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Shoot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "LobKick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnShoot(InputAction.CallbackContext context);
+        void OnLobKick(InputAction.CallbackContext context);
     }
 }
