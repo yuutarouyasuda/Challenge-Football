@@ -9,13 +9,16 @@ public class BallController : MonoBehaviour
     [SerializeField] private float dribbleSpeed = 5f;
     [SerializeField] private float lobHeight = 0.6f;
     [SerializeField] private float stealCooldown = 0.5f;
-
+    [Header("Ball Position")]
+    [SerializeField] private float holdDistance = 1.2f;
+    [SerializeField] private float holdHeight = 0.05f;
     private float stealTimer;
     private Rigidbody rb;
     public bool CanSteal
     {
         get { return stealTimer <= 0f; }
     }
+    public bool IsPassing { get; private set; }
     public MonoBehaviour Owner { get; private set; }
     private void Awake()
     {
@@ -26,6 +29,17 @@ public class BallController : MonoBehaviour
     {
         Owner = owner;
         stealTimer = stealCooldown;
+        IsPassing = false;
+
+        Vector3 target =
+            owner.transform.position +
+            owner.transform.forward * 0.8f +
+            Vector3.up * 0.2f;
+
+        rb.position = target;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
     }
 
     public void ClearOwner()
@@ -46,24 +60,23 @@ public class BallController : MonoBehaviour
             return;
 
         Vector3 target =
-            Owner.transform.position +
-            Owner.transform.forward * 0.8f
-            +Vector3.up*0.2f;
+    Owner.transform.position +
+    Owner.transform.forward * holdDistance +
+    Vector3.up * holdHeight;
 
-        Vector3 dir = target - transform.position;
+        // ボールを足元に固定
+        rb.MovePosition(target);
 
-        if (dir.magnitude > controlDistance)
-        {
-            rb.linearVelocity = new Vector3(
-                dir.normalized.x * dribbleSpeed,
-                rb.linearVelocity.y,
-                dir.normalized.z * dribbleSpeed);
-        }
+        // ボールが勝手に転がらないようにする
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
     }
     public void Kick(Vector3 direction,float power,bool isLob)
     {
         ClearOwner();
 
+        IsPassing = true;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         if(isLob)
@@ -79,5 +92,6 @@ public class BallController : MonoBehaviour
             rb.AddForce(direction.normalized * power, ForceMode.Impulse);
 
         }
+        Debug.Log(rb.linearVelocity);
     }
 }

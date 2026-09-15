@@ -134,24 +134,24 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+
         if (pickupTimer > 0)
-            return;
-
-        BallController ball =collision.gameObject.GetComponent<BallController>();
-
-        float stealDistance = 1.2f;
-
-        float distance = Vector3.Distance(
-            transform.position,
-            ball.transform.position);
-
-        if (distance < stealDistance)
         {
-            if (ball.CanSteal&&ball.Owner != this)
-            {
-                ball.SetOwner(this);
-                currentBall = ball;
-            }
+            return;
+        }
+
+        BallController ball = collision.gameObject.GetComponent<BallController>();
+
+        if (ball == null)
+        {
+            return;
+        }
+
+
+        if (ball.CanSteal && ball.Owner != this)
+        {
+            ball.SetOwner(this);
+            currentBall = ball;
         }
     }
     private Vector3 GetMouseDirection()
