@@ -10,6 +10,9 @@ public class TeammateAI : MonoBehaviour
     {
         CutPass,
         CoverGoal,
+
+        Support,
+        RunBehind,
     }
 
     public TeammateRole Role
@@ -17,9 +20,9 @@ public class TeammateAI : MonoBehaviour
         get;
         set;
     }
+    public bool isReceiver {  get; set; }
     [SerializeField] private Transform ownGoal;
     [Header("Reference")]
-    [SerializeField] private Transform player;
     [SerializeField] private Transform opponentGoal;
     [SerializeField] private EnemyAI[] enemies;
     [SerializeField] private TeammateAI[] teammates;
@@ -27,20 +30,51 @@ public class TeammateAI : MonoBehaviour
     [SerializeField] private float forwardDistance = 6f;
     [SerializeField] private float sideDistance = 4f;
     [SerializeField] private float avoidRadius=2f;
-
+    [SerializeField] private float interceptDistance = 1.5f;
     private NavMeshAgent agent;
-
+    private BallController currentBall;
+    private PlayerController playerController;
     private void Awake()
     {
+        playerController=GetComponent<PlayerController>();
         agent=GetComponent<NavMeshAgent>();
     }
     
     void Update()
     {
+        if (!agent.enabled)
+            return;
+        if (playerController != null && playerController.IsControlled)
+        {
+            agent.ResetPath();
+            agent.isStopped = true;
+            return;
+        }
+        agent.isStopped = false;
         bool isAttack = false;
 
         BallController ballController = FindFirstObjectByType<BallController>();
 
+        if (ballController == null)
+            return;
+
+        if (ballController!=null&&ballController.IsPassing&&isReceiver)
+        {
+            //受け手は積極的に追う
+            InterceptBall(ballController);
+            return;
+        }
+        //受けて以外でも近ければ取得できる
+        float d=Vector3.Distance(transform.position, ballController.transform.position);
+
+        if(d<2f&&ballController.Owner==null)
+        {
+           TakeBall(ballController);
+        }
+        if (currentBall!=null&&ballController.Owner!=this)
+        {
+            currentBall=null;
+        }
         if (ballController != null)
         {
             //プレイヤーまたは味方が持っていたら攻撃
@@ -63,18 +97,38 @@ public class TeammateAI : MonoBehaviour
         float score = 0;
 
         //ゴールに近いほど高評価
+        PlayerController current = GameManager.Instance.CurrentPlayer;
+
         score -= Vector3.Distance(point, opponentGoal.position);
 
-        foreach(EnemyAI enemy in enemies)
+        Vector3 goalDir =
+        (opponentGoal.position - current.transform.position).normalized;
+
+        float forward =
+            Vector3.Dot(point - current.transform.position, goalDir);
+
+        score += forward * 5f;
+
+        float playerDistanceToPoint=Vector3.Distance(point, current.transform.position);   
+
+        if(playerDistanceToPoint<3f)
         {
-            if (enemy == null)
-            continue;
-
-            float distance=Vector3.Distance(point,enemy.transform.position);
-
-            //敵から離れているほど高評価
-            score += distance;
+            score -= 100f;
         }
+        else if(playerDistanceToPoint<8f)
+        {
+            score += 30f;
+        }
+            foreach (EnemyAI enemy in enemies)
+            {
+                if (enemy == null)
+                    continue;
+
+                float distance = Vector3.Distance(point, enemy.transform.position);
+
+                //敵から離れているほど高評価
+                score += distance;
+            }
         foreach(TeammateAI mate in teammates)
         {
             if (mate == this)
@@ -95,7 +149,7 @@ public class TeammateAI : MonoBehaviour
             if (enemy == this) continue;
 
             float d = DistanceToLine(
-                player.position,
+                current.transform.position,
                 point,
                 enemy.transform.position);
 
@@ -109,7 +163,11 @@ public class TeammateAI : MonoBehaviour
         {
             score += 100;
         }
-        List<float> defenderDistances = new List<float>();
+        else
+        {
+            score -= 300f;
+        }
+            List<float> defenderDistances = new List<float>();
 
         foreach (EnemyAI enemy in enemies)
         {
@@ -132,7 +190,7 @@ public class TeammateAI : MonoBehaviour
                 Vector3.Distance(point, opponentGoal.position);
 
             float playerDistance =
-                Vector3.Distance(player.position, opponentGoal.position);
+                Vector3.Distance(current.transform.position, opponentGoal.position);
 
             if (pointDistance < playerDistance &&
                 pointDistance < secondDefenderDistance)
@@ -144,56 +202,21 @@ public class TeammateAI : MonoBehaviour
     }
     private void AttackMove()
     {
-        if (player == null || opponentGoal == null)
-            return;
-
-        //プレイヤーの味方
-        Vector3 goalDir = (opponentGoal.position - player.position).normalized;
-        goalDir.y = 0;
-
-        //候補地点
-        List<Vector3> candidates = new List<Vector3>();
-
-        for (int i = 0; i < 30; i++)
+        switch (Role)
         {
-            Vector2 random = Random.insideUnitCircle * 8f;
+            case TeammateRole.Support:
+                SupportMove();
+                break;
 
-            Vector3 point =
-                player.position +
-                goalDir * forwardDistance +
-                new Vector3(random.x, 0, random.y);
-
-            //フィールド外なら候補にしない
-            if (point.x < -50 || point.x > 50)
-                continue;
-
-            if (point.z < -50 || point.z > 50)
-                continue;
-
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(point, out hit, 1.5f, NavMesh.AllAreas))
-            {
-                candidates.Add(hit.position);
-            }
+            case TeammateRole.RunBehind:
+                RunBehindMove();
+                break;
         }
-        Vector3 bestTarget = candidates[0];
-        float bestScore = -999f;
-
-        foreach (Vector3 point in candidates)
-        {
-            float score = EvaluatePositiion(point);
-
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestTarget = point;
-            }
-        }
-        agent.SetDestination(bestTarget);
+        
     }
     private void DefenceMove()
     {
-        Debug.Log(Role);
+        if(!agent.enabled) return;
         switch (Role)
         {
             case TeammateRole.CutPass:
@@ -205,6 +228,112 @@ public class TeammateAI : MonoBehaviour
                 break;
         }
     }
+    private void SupportMove()
+    {
+        if (!agent.enabled)
+            return;
+
+        PlayerController current = GameManager.Instance.CurrentPlayer;
+
+        if (current == null || opponentGoal == null)
+            return;
+
+        Vector3 goalDir =
+            (opponentGoal.position - current.transform.position).normalized;
+        goalDir.y = 0;
+
+        List<Vector3> candidates = new List<Vector3>();
+
+        // プレイヤーの周囲5～8mに候補を作る
+        for (int i = 0; i < 30; i++)
+        {
+            Vector3 point =
+                current.transform.position +
+                goalDir * Random.Range(3f, 6f) +
+                Random.insideUnitSphere * 3f;
+
+            point.y = current.transform.position.y;
+
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(point, out hit, 1.5f, NavMesh.AllAreas))
+            {
+                candidates.Add(hit.position);
+            }
+        }
+
+        if (candidates.Count == 0)
+            return;
+
+        Vector3 bestTarget = candidates[0];
+        float bestScore = float.MinValue;
+
+        foreach (Vector3 point in candidates)
+        {
+            float score = EvaluatePositiion(point);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestTarget = point;
+            }
+        }
+
+        agent.SetDestination(bestTarget);
+    }
+
+    private void RunBehindMove()
+    {
+        if (!agent.enabled)
+            return;
+
+        PlayerController current = GameManager.Instance.CurrentPlayer;
+
+        if (current == null || opponentGoal == null)
+            return;
+
+        Vector3 goalDir =
+            (opponentGoal.position - current.transform.position).normalized;
+        goalDir.y = 0;
+
+        // プレイヤーより前に8m
+        Vector3 target =
+            current.transform.position +
+            goalDir * 8f;
+
+        // 一番近い敵から少し逃げる
+        EnemyAI nearestEnemy = null;
+        float nearestDistance = float.MaxValue;
+
+        foreach (EnemyAI enemy in enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            float d =
+                Vector3.Distance(target, enemy.transform.position);
+
+            if (d < nearestDistance)
+            {
+                nearestDistance = d;
+                nearestEnemy = enemy;
+            }
+        }
+
+        if (nearestEnemy != null)
+        {
+            Vector3 away =
+                (target - nearestEnemy.transform.position).normalized;
+
+            target += away * 3f;
+        }
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(target, out hit, 2f, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+    }
     private void CutPassMove()
     {
         BallController ball = FindAnyObjectByType<BallController>();
@@ -212,7 +341,7 @@ public class TeammateAI : MonoBehaviour
         if (ball == null)
             return;
         //パス中ならインターセプト
-        if(ball.IsPassing)
+        if(ball.IsPassing&&isReceiver)
         {
             InterceptBall(ball);
             return;
@@ -288,6 +417,17 @@ public class TeammateAI : MonoBehaviour
 
             agent.SetDestination(target);
         }
+        //インターセプト
+        float distance=
+            Vector3.Distance(transform.position,ball.transform.position);
+
+        if(distance< interceptDistance)
+        {
+            if(ball.CanSteal&&ball.Owner!=this)
+            {
+               TakeBall(ball);
+            }
+        }
     }
     private void CoverGoalMove()
     {
@@ -323,10 +463,24 @@ public class TeammateAI : MonoBehaviour
     }
     private void InterceptBall(BallController ball)
     {
+        if (!agent.enabled) return;
         Rigidbody rb=ball.GetComponent<Rigidbody>();
 
-        Vector3 target=ball.transform.position+rb.linearVelocity.normalized*2f;
+        Vector3 target=ball.transform.position+rb.linearVelocity.normalized*0.3f;
 
         agent.SetDestination(target);
+
+        float distance = Vector3.Distance(transform.position, ball.transform.position);
+
+        if (distance < 2f&&ball.Owner==null)
+        {
+           TakeBall(ball);
+        }
+    }
+    private void TakeBall(BallController ball)
+    {
+        ball.SetOwner(this);
+        currentBall = ball;
+        isReceiver = false;
     }
 }

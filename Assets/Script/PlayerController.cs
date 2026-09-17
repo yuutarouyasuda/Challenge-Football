@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -27,10 +28,11 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private BallController currentBall;
     private PlayerInputActions inputActions;
-
+    private TeammateAI teammateAI;
     private Vector2 moveInput;
     private bool isDash;
 
+    public bool IsControlled = false;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -39,11 +41,8 @@ public class PlayerController : MonoBehaviour
                          RigidbodyConstraints.FreezeRotationZ;
 
         inputActions = new PlayerInputActions();
-    }
 
-    private void OnEnable()
-    {
-        inputActions.Enable();
+        teammateAI = GetComponent<TeammateAI>();
 
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
@@ -60,21 +59,22 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        inputActions.Player.Move.performed -= OnMove;
-        inputActions.Player.Move.canceled -= OnMove;
-
-        inputActions.Player.Dash.performed -= OnDash;
-        inputActions.Player.Dash.canceled -= OnDash;
-
-        inputActions.Player.GroundKick.started -= OnGroundKickStarted;
-        inputActions.Player.GroundKick.canceled -= OnGroundKickCanceled;
-
-        inputActions.Player.LobKick.started -= OnLobKickStarted;
-        inputActions.Player.LobKick.canceled -= OnLobKickCanceled;
-
         inputActions.Disable();
     }
+    public void EnableInput()
+    {
+        inputActions.Enable();
+    }
+    public void DisableInput()
+    {
+        inputActions.Disable();
 
+        moveInput = Vector2.zero;
+        isDash = false;
+
+        chargingGroundKick = false;
+        chargingLobKick = false;
+    }
     private void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -87,31 +87,38 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         startPosition = transform.position;
-        startRotation=transform.rotation;
+        startRotation = transform.rotation;
     }
     private void Update()
     {
-        if (currentBall != null && currentBall.Owner != this)
+        if (!IsControlled) return;
+        if (currentBall != null)
         {
-            currentBall = null;
+            if (currentBall.Owner != this &&
+                currentBall.Owner != GetComponent<TeammateAI>())
+            {
+                currentBall = null;
+            }
         }
         if (chargingGroundKick)
         {
             groundKickPower += GroundKickchargeSpeed * Time.deltaTime;
-            groundKickPower = Mathf.Clamp(groundKickPower, 5f,maxGroundKickPower);
+            groundKickPower = Mathf.Clamp(groundKickPower, 5f, maxGroundKickPower);
         }
-        if(pickupTimer>0)
+        if (pickupTimer > 0)
         {
-            pickupTimer-=Time.deltaTime;
+            pickupTimer -= Time.deltaTime;
         }
-        if(chargingLobKick)
+        if (chargingLobKick)
         {
             lobKickPower += LobKickChargeSpeed * Time.deltaTime;
-            lobKickPower = Mathf.Clamp(lobKickPower, 10f,maxLobKickPower);
+            lobKickPower = Mathf.Clamp(lobKickPower, 10f, maxLobKickPower);
         }
     }
     private void FixedUpdate()
     {
+        if (!IsControlled) return;
+
         float speed = isDash ? dashSpeed : moveSpeed;
 
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
@@ -175,14 +182,35 @@ public class PlayerController : MonoBehaviour
 
     private void OnGroundKickCanceled(InputAction.CallbackContext ctx)
     {
-        chargingGroundKick = false;
-
         if (currentBall == null)
             return;
-
         Vector3 dir = GetMouseDirection();
+
         transform.forward = dir;
-        currentBall.Kick(dir, groundKickPower,false);
+
+        TeammateAI[] mates = FindObjectsByType<TeammateAI>(FindObjectsSortMode.None);
+
+        float best = float.MaxValue;
+        TeammateAI receiver = null;
+
+        foreach (TeammateAI mate in mates)
+        {
+            mate.isReceiver = false;
+
+            float d = Vector3.Distance(mate.transform.position, transform.position);
+
+            if (d < best)
+            {
+                best = d;
+                receiver = mate;
+            }
+        }
+
+        if (receiver != null)
+        {
+            receiver.isReceiver = true;
+        }
+        currentBall.Kick(dir, groundKickPower, false);
 
         currentBall = null;
         pickupTimer = pickupCooldown;
@@ -203,7 +231,7 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = GetMouseDirection();
         dir.y = 0.5f;
 
-        currentBall.Kick(dir, lobKickPower,true);
+        currentBall.Kick(dir, lobKickPower, true);
 
         currentBall = null;
         pickupTimer = pickupCooldown;
@@ -215,5 +243,9 @@ public class PlayerController : MonoBehaviour
 
         transform.position = startPosition;
         transform.rotation = startRotation;
+    }
+    public void SetCurrentBall(BallController ball)
+    {
+        currentBall = ball;
     }
 }

@@ -1,7 +1,12 @@
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
+using Unity.Multiplayer.PlayMode;
+using UnityEngine.AI;
 public class GameManager : MonoBehaviour
 {
+    public PlayerController CurrentPlayer {  get; private set; }
+
     public static GameManager Instance;
     [Header("Score")]
     public int homeScore;
@@ -15,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text homeScoreText;
     [SerializeField] private TMP_Text awayScoreText;
     [SerializeField] private TMP_Text timerText;
+    [SerializeField] private PlayerController firstPlayer;
     private float currentTime;
 
     private void Awake()
@@ -28,6 +34,8 @@ public class GameManager : MonoBehaviour
 
         UpdateTimerUI();
         UpdateScoreUI();
+
+        ChangePlayer(firstPlayer);
     }
 
     // Update is called once per frame
@@ -44,6 +52,35 @@ public class GameManager : MonoBehaviour
             UpdateTimerUI();
             EndMatch();
         }
+    }
+    public void ChangePlayer(PlayerController player)
+    {
+        if (CurrentPlayer != null)
+        {
+            CurrentPlayer.IsControlled = false;
+            CurrentPlayer.DisableInput();
+            CurrentPlayer.IsControlled = false;
+
+            NavMeshAgent oldAgent = CurrentPlayer.GetComponent<NavMeshAgent>();
+            if (oldAgent != null)
+                oldAgent.enabled = true;
+
+            TeammateAI oldAI = CurrentPlayer.GetComponent<TeammateAI>();
+            if (oldAI != null)
+                oldAI.enabled = true;
+        }
+
+        CurrentPlayer = player;
+        CurrentPlayer.IsControlled = true;
+        CurrentPlayer.EnableInput();
+
+        NavMeshAgent newAgent = CurrentPlayer.GetComponent<NavMeshAgent>();
+        if (newAgent != null)
+            newAgent.enabled = false;
+
+        TeammateAI newAI = CurrentPlayer.GetComponent<TeammateAI>();
+        if (newAI != null)
+            newAI.enabled = false;
     }
     public void Goal(bool homeGoal, Rigidbody ballRb)
     {
@@ -65,6 +102,15 @@ public class GameManager : MonoBehaviour
         foreach (PlayerController player in Players)
         {
             player.ResetPosition();
+        }
+    }
+    public void OnBallOwnerChanged(MonoBehaviour owner)
+    {
+        PlayerController player = owner.GetComponent<PlayerController>();
+
+        if (player != null)
+        {
+            ChangePlayer(player);
         }
     }
     private void UpdateTimerUI()

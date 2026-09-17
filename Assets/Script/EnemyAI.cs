@@ -118,7 +118,6 @@ public class EnemyAI : MonoBehaviour
 
                 if (receiver != null&&passTimer<=0f)
                 {
-                    Debug.Log("ƒpƒXŽÀs");
                     PassBall();
                     passTimer = passCooldown;
                 }
@@ -151,17 +150,12 @@ public class EnemyAI : MonoBehaviour
                 best = mate;
             }
         }
-        if (best != null)
-        {
-            Debug.Log(best.name);
-        }
+        
         return best;
 
     }
     private void PassBall()
     {
-        Debug.Log(currentBall);
-
         EnemyAI receiver = FindBestReceiver(); ;
 
         if (receiver == null)

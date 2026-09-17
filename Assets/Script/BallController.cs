@@ -39,7 +39,18 @@ public class BallController : MonoBehaviour
         rb.position = target;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+         
+        if(owner is TeammateAI mate)
+        {
+            mate.isReceiver = false;
+        }
 
+        PlayerController player =owner.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            player.SetCurrentBall(this);
+        }
+        GameManager.Instance.OnBallOwnerChanged(owner);
     }
 
     public void ClearOwner()
@@ -74,6 +85,7 @@ public class BallController : MonoBehaviour
     }
     public void Kick(Vector3 direction,float power,bool isLob)
     {
+
         ClearOwner();
 
         IsPassing = true;
@@ -92,6 +104,6 @@ public class BallController : MonoBehaviour
             rb.AddForce(direction.normalized * power, ForceMode.Impulse);
 
         }
-        Debug.Log(rb.linearVelocity);
+
     }
 }

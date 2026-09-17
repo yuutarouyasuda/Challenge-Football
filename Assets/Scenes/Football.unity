@@ -812,6 +812,8 @@ GameObject:
   - component: {fileID: 488708331}
   - component: {fileID: 488708330}
   - component: {fileID: 488708329}
+  - component: {fileID: 488708336}
+  - component: {fileID: 488708335}
   m_Layer: 0
   m_Name: 'Player '
   m_TagString: Untagged
@@ -839,6 +841,7 @@ MonoBehaviour:
   maxLobKickPower: 30
   LobKickChargeSpeed: 20
   pickupCooldown: 0.3
+  IsControlled: 0
 --- !u!54 &488708330
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -863,9 +866,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &488708331
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -959,6 +962,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &488708335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488708328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 499ddb1079804cf4391d1d13f91e9be2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI
+  ownGoal: {fileID: 1268239319}
+  player: {fileID: 488708334}
+  opponentGoal: {fileID: 1944933098}
+  enemies:
+  - {fileID: 583874510}
+  - {fileID: 748156153}
+  - {fileID: 2106489954}
+  teammates:
+  - {fileID: 896785674}
+  - {fileID: 823869369}
+  forwardDistance: 6
+  sideDistance: 4
+  avoidRadius: 2
+  interceptDistance: 1.5
+--- !u!195 &488708336
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488708328}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &525501550
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,7 +1258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &583874510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1229,7 +1280,7 @@ MonoBehaviour:
   teammates:
   - {fileID: 748156153}
   - {fileID: 2106489954}
-  passPower: 12
+  passPower: 5
   passCooldown: 1
 --- !u!195 &583874511
 NavMeshAgent:
@@ -1396,7 +1447,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &748156153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1418,7 +1469,7 @@ MonoBehaviour:
   teammates:
   - {fileID: 583874510}
   - {fileID: 2106489954}
-  passPower: 12
+  passPower: 5
   passCooldown: 1
 --- !u!195 &748156154
 NavMeshAgent:
@@ -1578,6 +1629,8 @@ GameObject:
   - component: {fileID: 823869371}
   - component: {fileID: 823869370}
   - component: {fileID: 823869369}
+  - component: {fileID: 823869376}
+  - component: {fileID: 823869375}
   m_Layer: 0
   m_Name: Teammate (1)
   m_TagString: Untagged
@@ -1609,6 +1662,7 @@ MonoBehaviour:
   forwardDistance: 6
   sideDistance: 4
   avoidRadius: 2
+  interceptDistance: 1.5
 --- !u!195 &823869370
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1724,6 +1778,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &823869375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823869368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae9bf16765b0824cad519f7dc4dd323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 5
+  dashSpeed: 8
+  rotateSpeed: 10
+  maxGroundKickPower: 15
+  GroundKickchargeSpeed: 10
+  maxLobKickPower: 30
+  LobKickChargeSpeed: 20
+  pickupCooldown: 0.3
+  IsControlled: 0
+--- !u!54 &823869376
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823869368}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,6 +2026,8 @@ GameObject:
   - component: {fileID: 896785676}
   - component: {fileID: 896785675}
   - component: {fileID: 896785674}
+  - component: {fileID: 896785681}
+  - component: {fileID: 896785680}
   m_Layer: 0
   m_Name: Teammate
   m_TagString: Untagged
@@ -1955,6 +2059,7 @@ MonoBehaviour:
   forwardDistance: 6
   sideDistance: 4
   avoidRadius: 2
+  interceptDistance: 1.5
 --- !u!195 &896785675
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2070,6 +2175,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &896785680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896785673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae9bf16765b0824cad519f7dc4dd323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 5
+  dashSpeed: 8
+  rotateSpeed: 10
+  maxGroundKickPower: 15
+  GroundKickchargeSpeed: 10
+  maxLobKickPower: 30
+  LobKickChargeSpeed: 20
+  pickupCooldown: 0.3
+  IsControlled: 0
+--- !u!54 &896785681
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896785673}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 1
 --- !u!1 &1098605101
 GameObject:
   m_ObjectHideFlags: 0
@@ -2274,6 +2427,7 @@ MonoBehaviour:
   homeScoreText: {fileID: 1098605103}
   awayScoreText: {fileID: 893488852}
   timerText: {fileID: 1440733948}
+  firstPlayer: {fileID: 488708329}
 --- !u!4 &1287678772
 Transform:
   m_ObjectHideFlags: 0
@@ -2833,7 +2987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2106489954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2855,7 +3009,7 @@ MonoBehaviour:
   teammates:
   - {fileID: 583874510}
   - {fileID: 748156153}
-  passPower: 12
+  passPower: 5
   passCooldown: 1
 --- !u!195 &2106489955
 NavMeshAgent:
