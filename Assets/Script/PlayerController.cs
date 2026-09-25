@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private BallController currentBall;
     private PlayerInputActions inputActions;
-    private TeammateAI teammateAI;
+    private TeammateAI_New teammateAI;
     private Vector2 moveInput;
     private bool isDash;
 
@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
         inputActions = new PlayerInputActions();
 
-        teammateAI = GetComponent<TeammateAI>();
+        teammateAI = GetComponent<TeammateAI_New>();
 
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
         if (currentBall != null)
         {
             if (currentBall.Owner != this &&
-                currentBall.Owner != GetComponent<TeammateAI>())
+                currentBall.Owner != GetComponent<TeammateAI_New>())
             {
                 currentBall = null;
             }
@@ -122,7 +122,7 @@ public class PlayerController : MonoBehaviour
         float speed = isDash ? dashSpeed : moveSpeed;
 
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
-
+        
         Vector3 velocity = move * speed;
         velocity.y = rb.linearVelocity.y;
 
@@ -174,6 +174,30 @@ public class PlayerController : MonoBehaviour
 
         return transform.forward;
     }
+    public void GroundPass(Vector3 dir,float power)
+    {
+        if (currentBall == null)
+            return;
+
+        transform.forward = dir;
+
+        currentBall.Kick(dir, power, false);
+
+        currentBall = null;
+        pickupTimer = pickupCooldown;
+    }
+    public void LobPass(Vector3 dir, float power)
+    {
+        if (currentBall == null)
+            return;
+
+        dir.y = 0.5f;
+
+        currentBall.Kick(dir, power, true);
+
+        currentBall = null;
+        pickupTimer = pickupCooldown;
+    }
     private void OnGroundKickStarted(InputAction.CallbackContext ctx)
     {
         chargingGroundKick = true;
@@ -182,22 +206,34 @@ public class PlayerController : MonoBehaviour
 
     private void OnGroundKickCanceled(InputAction.CallbackContext ctx)
     {
+        chargingGroundKick = false;
+
         if (currentBall == null)
             return;
+
         Vector3 dir = GetMouseDirection();
 
-        transform.forward = dir;
+        // ‘Sˆõ‚ÌŽó‚¯Žèƒtƒ‰ƒO‚ðOFF
+        TeammateAI_New[] mates =
+            FindObjectsByType<TeammateAI_New>(FindObjectsSortMode.None);
 
-        TeammateAI[] mates = FindObjectsByType<TeammateAI>(FindObjectsSortMode.None);
-
-        float best = float.MaxValue;
-        TeammateAI receiver = null;
-
-        foreach (TeammateAI mate in mates)
+        foreach (TeammateAI_New mate in mates)
         {
             mate.isReceiver = false;
+        }
 
-            float d = Vector3.Distance(mate.transform.position, transform.position);
+        // ˆê”Ô‹ß‚¢–¡•û‚ðŽó‚¯Žè‚É‚·‚é
+        float best = float.MaxValue;
+        TeammateAI_New receiver = null;
+
+        foreach (TeammateAI_New mate in mates)
+        {
+            if (mate.GetComponent<PlayerController>() == this)
+                continue;
+
+            float d = Vector3.Distance(
+                transform.position,
+                mate.transform.position);
 
             if (d < best)
             {
@@ -210,10 +246,8 @@ public class PlayerController : MonoBehaviour
         {
             receiver.isReceiver = true;
         }
-        currentBall.Kick(dir, groundKickPower, false);
 
-        currentBall = null;
-        pickupTimer = pickupCooldown;
+        GroundPass(dir, groundKickPower);
     }
     private void OnLobKickStarted(InputAction.CallbackContext ctx)
     {
@@ -225,16 +259,7 @@ public class PlayerController : MonoBehaviour
     {
         chargingLobKick = false;
 
-        if (currentBall == null)
-            return;
-
-        Vector3 dir = GetMouseDirection();
-        dir.y = 0.5f;
-
-        currentBall.Kick(dir, lobKickPower, true);
-
-        currentBall = null;
-        pickupTimer = pickupCooldown;
+        LobPass(GetMouseDirection(), lobKickPower);
     }
     public void ResetPosition()
     {
@@ -248,4 +273,5 @@ public class PlayerController : MonoBehaviour
     {
         currentBall = ball;
     }
+
 }

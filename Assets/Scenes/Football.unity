@@ -813,7 +813,7 @@ GameObject:
   - component: {fileID: 488708330}
   - component: {fileID: 488708329}
   - component: {fileID: 488708336}
-  - component: {fileID: 488708335}
+  - component: {fileID: 488708337}
   m_Layer: 0
   m_Name: 'Player '
   m_TagString: Untagged
@@ -962,31 +962,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &488708335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 488708328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499ddb1079804cf4391d1d13f91e9be2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI
-  ownGoal: {fileID: 1268239319}
-  opponentGoal: {fileID: 1944933098}
-  enemies:
-  - {fileID: 583874510}
-  - {fileID: 748156153}
-  - {fileID: 2106489954}
-  teammates:
-  - {fileID: 896785674}
-  - {fileID: 823869369}
-  forwardDistance: 6
-  sideDistance: 4
-  avoidRadius: 2
-  interceptDistance: 1.5
 --- !u!195 &488708336
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1009,6 +984,29 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &488708337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488708328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4b8941d1a7edc240af3a514e049b865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI_New
+  ownGoal: {fileID: 1268239319}
+  opponentGoal: {fileID: 1944933098}
+  enemies:
+  - {fileID: 583874510}
+  - {fileID: 748156153}
+  - {fileID: 2106489954}
+  teammates:
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  isReceiver: 0
 --- !u!1 &525501550
 GameObject:
   m_ObjectHideFlags: 0
@@ -1627,9 +1625,9 @@ GameObject:
   - component: {fileID: 823869372}
   - component: {fileID: 823869371}
   - component: {fileID: 823869370}
-  - component: {fileID: 823869369}
   - component: {fileID: 823869376}
   - component: {fileID: 823869375}
+  - component: {fileID: 823869377}
   m_Layer: 0
   m_Name: Teammate (1)
   m_TagString: Untagged
@@ -1637,30 +1635,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &823869369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 823869368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499ddb1079804cf4391d1d13f91e9be2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI
-  ownGoal: {fileID: 1268239319}
-  opponentGoal: {fileID: 1944933098}
-  enemies:
-  - {fileID: 583874510}
-  - {fileID: 748156153}
-  - {fileID: 2106489954}
-  teammates:
-  - {fileID: 896785674}
-  forwardDistance: 6
-  sideDistance: 4
-  avoidRadius: 2
-  interceptDistance: 1.5
 --- !u!195 &823869370
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1824,6 +1798,29 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &823869377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823869368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4b8941d1a7edc240af3a514e049b865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI_New
+  ownGoal: {fileID: 1268239319}
+  opponentGoal: {fileID: 1944933098}
+  enemies:
+  - {fileID: 583874510}
+  - {fileID: 748156153}
+  - {fileID: 2106489954}
+  teammates:
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  isReceiver: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2023,9 +2020,9 @@ GameObject:
   - component: {fileID: 896785677}
   - component: {fileID: 896785676}
   - component: {fileID: 896785675}
-  - component: {fileID: 896785674}
   - component: {fileID: 896785681}
   - component: {fileID: 896785680}
+  - component: {fileID: 896785682}
   m_Layer: 0
   m_Name: Teammate
   m_TagString: Untagged
@@ -2033,30 +2030,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &896785674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 896785673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 499ddb1079804cf4391d1d13f91e9be2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI
-  ownGoal: {fileID: 1268239319}
-  opponentGoal: {fileID: 1944933098}
-  enemies:
-  - {fileID: 583874510}
-  - {fileID: 748156153}
-  - {fileID: 2106489954}
-  teammates:
-  - {fileID: 823869369}
-  forwardDistance: 6
-  sideDistance: 4
-  avoidRadius: 2
-  interceptDistance: 1.5
 --- !u!195 &896785675
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -2220,6 +2193,29 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
+--- !u!114 &896785682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 896785673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4b8941d1a7edc240af3a514e049b865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeammateAI_New
+  ownGoal: {fileID: 1268239319}
+  opponentGoal: {fileID: 1944933098}
+  enemies:
+  - {fileID: 583874510}
+  - {fileID: 748156153}
+  - {fileID: 2106489954}
+  teammates:
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  - {fileID: 488708337}
+  isReceiver: 0
 --- !u!1 &1098605101
 GameObject:
   m_ObjectHideFlags: 0
@@ -2717,6 +2713,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1557566761}
   - component: {fileID: 1557566760}
+  - component: {fileID: 1557566762}
   m_Layer: 0
   m_Name: TeammateManager
   m_TagString: Untagged
@@ -2731,14 +2728,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1557566759}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e87187f6a870164988659b1b5969049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TeammateManager
   teammates:
-  - {fileID: 896785674}
-  - {fileID: 823869369}
+  - {fileID: 0}
+  - {fileID: 0}
   ball: {fileID: 579379397}
 --- !u!4 &1557566761
 Transform:
@@ -2755,6 +2752,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1557566762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557566759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f65b829b91201f409d5e39d65c3bd6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TeamManager_New
+  teammates:
+  - {fileID: 488708337}
+  - {fileID: 896785682}
+  - {fileID: 823869377}
+  ball: {fileID: 579379398}
 --- !u!1 &1807795084
 GameObject:
   m_ObjectHideFlags: 0

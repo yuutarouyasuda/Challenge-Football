@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
             if (oldAgent != null)
                 oldAgent.enabled = true;
 
-            TeammateAI oldAI = CurrentPlayer.GetComponent<TeammateAI>();
+            TeammateAI_New oldAI = CurrentPlayer.GetComponent<TeammateAI_New>();
             if (oldAI != null)
                 oldAI.enabled = true;
         }
@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
         if (newAgent != null)
             newAgent.enabled = false;
 
-        TeammateAI newAI = CurrentPlayer.GetComponent<TeammateAI>();
+        TeammateAI_New newAI = CurrentPlayer.GetComponent<TeammateAI_New>();
         if (newAI != null)
             newAI.enabled = false;
     }
