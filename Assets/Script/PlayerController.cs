@@ -16,7 +16,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxLobKickPower = 30f;
     [SerializeField] private float LobKickChargeSpeed = 20f;
     [SerializeField] private float pickupCooldown = 0.3f;
-
+    [Header("Goalkeeper")]
+    [SerializeField] private bool isGoalkeeper = false;
+    [SerializeField] private float catchDistance = 2f;
+    private float catchCooldown = 0f;
+    [SerializeField] private float catchDelay = 0.5f;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private float pickupTimer = 0f;
@@ -114,6 +118,12 @@ public class PlayerController : MonoBehaviour
             lobKickPower += LobKickChargeSpeed * Time.deltaTime;
             lobKickPower = Mathf.Clamp(lobKickPower, 10f, maxLobKickPower);
         }
+        if (isGoalkeeper)
+        {
+            TryCatchBall();
+        }
+        if (catchCooldown > 0)
+            catchCooldown -= Time.deltaTime;
     }
     private void FixedUpdate()
     {
@@ -159,6 +169,7 @@ public class PlayerController : MonoBehaviour
         {
             ball.SetOwner(this);
             currentBall = ball;
+            catchCooldown = catchDelay;
         }
     }
     private Vector3 GetMouseDirection()
@@ -174,10 +185,13 @@ public class PlayerController : MonoBehaviour
 
         return transform.forward;
     }
-    public void GroundPass(Vector3 dir,float power)
+    public void GroundPass(Vector3 dir, float power)
     {
+
         if (currentBall == null)
+        {
             return;
+        }
 
         transform.forward = dir;
 
@@ -185,6 +199,7 @@ public class PlayerController : MonoBehaviour
 
         currentBall = null;
         pickupTimer = pickupCooldown;
+        catchCooldown = catchDelay;
     }
     public void LobPass(Vector3 dir, float power)
     {
@@ -273,5 +288,30 @@ public class PlayerController : MonoBehaviour
     {
         currentBall = ball;
     }
+    private void TryCatchBall()
+    {
+        if (catchCooldown > 0)
+            return;
+        BallController ball = FindFirstObjectByType<BallController>();
 
+        if (ball == null)
+            return;
+
+
+        if (ball.Owner != null)
+            return;
+
+        float distance =
+            Vector3.Distance(transform.position,
+                             ball.transform.position);
+
+        if (distance > catchDistance)
+            return;
+
+        ball.SetOwner(this);
+
+        currentBall = ball;
+
+        pickupTimer = pickupCooldown;
+    }
 }

@@ -20,6 +20,7 @@ public class BallController : MonoBehaviour
     }
     public bool IsPassing { get; private set; }
     public MonoBehaviour Owner { get; private set; }
+    public MonoBehaviour LastKicker {  get; private set; }
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -28,6 +29,8 @@ public class BallController : MonoBehaviour
     public void SetOwner(MonoBehaviour owner)
     {
         Owner = owner;
+
+        LastKicker = null;
         stealTimer = stealCooldown;
         IsPassing = false;
 
@@ -85,6 +88,7 @@ public class BallController : MonoBehaviour
     }
     public void Kick(Vector3 direction,float power,bool isLob)
     {
+        LastKicker = Owner;
 
         ClearOwner();
 

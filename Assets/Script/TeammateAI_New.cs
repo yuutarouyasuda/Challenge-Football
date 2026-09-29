@@ -34,7 +34,11 @@ public class TeammateAI_New : MonoBehaviour
     private void Update()
     {
         BallController ball = FindAnyObjectByType<BallController>();
-
+        if (ball != null && ball.Owner == null)
+        {
+            ChaseLooseBall(ball);
+            return;
+        }
         if (isReceiver && ball != null && ball.Owner == null)
         {
             Vector3 target;
@@ -240,45 +244,60 @@ public class TeammateAI_New : MonoBehaviour
     private float supportTimer;
     private void SupportMove()
     {
-        supportTimer -= Time.deltaTime;
-
-        if (supportTimer > 0f)
-            return;
-
-        supportTimer = 0.5f;
         if (!agent.enabled)
             return;
 
-        PlayerController current = GameManager.Instance.CurrentPlayer;
+        PlayerController owner = GameManager.Instance.CurrentPlayer;
 
-        if (current == null || opponentGoal == null)
+        if (owner == null)
             return;
+
+        Vector3 forward = owner.transform.forward;
+        Vector3 right = owner.transform.right;
+
+        Vector3[] candidates =
+        {
+        owner.transform.position + forward * 6f,
+        owner.transform.position + forward * 4f + right * 5f,
+        owner.transform.position + forward * 4f - right * 5f,
+        owner.transform.position + right * 6f
+    };
 
         Vector3 bestPoint = transform.position;
         float bestScore = float.MinValue;
 
-        // îºåa
-        float radius = 12f;
-
-        // åÛï‚êî
-        int sampleCount = 80;
-
-        for (int i = 0; i < sampleCount; i++)
+        foreach (Vector3 p in candidates)
         {
-            // ÉâÉìÉ_ÉÄï˚å¸
-            Vector2 random =
-                Random.insideUnitCircle * radius;
-
-            Vector3 point =
-                current.transform.position +
-                new Vector3(random.x, 0, random.y);
-
             NavMeshHit hit;
 
-            if (!NavMesh.SamplePosition(point, out hit, 2f, NavMesh.AllAreas))
+            if (!NavMesh.SamplePosition(p, out hit, 2f, NavMesh.AllAreas))
                 continue;
 
-            float score = EvaluatePosition(hit.position);
+            float score = 0;
+
+            // ÉSÅ[ÉãÇ…ãﬂÇ¢
+            score -= Vector3.Distance(hit.position, opponentGoal.position);
+
+            // ìGÇ©ÇÁó£ÇÍÇÈ
+            foreach (EnemyAI enemy in enemies)
+            {
+                score += Vector3.Distance(hit.position,
+                                          enemy.transform.position);
+            }
+
+            // ñ°ï˚Ç∆èdÇ»ÇÁÇ»Ç¢
+            foreach (TeammateAI_New mate in teammates)
+            {
+                if (mate == this)
+                    continue;
+
+                float d =
+                    Vector3.Distance(hit.position,
+                                     mate.transform.position);
+
+                if (d < 3f)
+                    score -= 100f;
+            }
 
             if (score > bestScore)
             {
@@ -287,49 +306,50 @@ public class TeammateAI_New : MonoBehaviour
             }
         }
 
-        // è≠ÇµÇµÇ©ïœÇÌÇÁÇ»Ç¢Ç»ÇÁçXêVÇµÇ»Ç¢
-        if (Vector3.Distance(agent.destination, bestPoint) > 1f)
-        {
-            agent.SetDestination(bestPoint);
-        }
+        agent.SetDestination(bestPoint);
     }
     private void RunBehindMove()
     {
-        EnemyAI lastDefender = null;
-        float best = float.MaxValue;
+        if (!agent.enabled)
+            return;
+
+        EnemyAI nearest = null;
+        float nearestDistance = Mathf.Infinity;
 
         foreach (EnemyAI enemy in enemies)
         {
-            if (enemy == null)
-                continue;
-
             float d =
-                Vector3.Distance(enemy.transform.position,
-                                 opponentGoal.position);
+                Vector3.Distance(transform.position,
+                                 enemy.transform.position);
 
-            if (d < best)
+            if (d < nearestDistance)
             {
-                best = d;
-                lastDefender = enemy;
+                nearestDistance = d;
+                nearest = enemy;
             }
         }
-        if (lastDefender == null)
+
+        if (nearest == null)
             return;
 
         Vector3 goalDir =
-            (opponentGoal.position - lastDefender.transform.position).normalized;
+            (opponentGoal.position -
+             nearest.transform.position).normalized;
 
         Vector3 target =
-            lastDefender.transform.position +
-            goalDir * 3f;
+            nearest.transform.position +
+            goalDir * 5f;
+
         NavMeshHit hit;
 
-        if (NavMesh.SamplePosition(target, out hit, 2f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(target,
+                                   out hit,
+                                   2f,
+                                   NavMesh.AllAreas))
         {
             agent.SetDestination(hit.position);
         }
     }
-
     private void PressMove()
     {
         if (!agent.enabled)
@@ -420,5 +440,36 @@ public class TeammateAI_New : MonoBehaviour
         ball.SetOwner(player);
 
         isReceiver = false;
+    }
+    private void ChaseLooseBall(BallController ball)
+    {
+        // é©ï™Ç™àÍî‘ãﬂÇ¢Ç©îªíË
+        float myDistance =
+            Vector3.Distance(transform.position, ball.transform.position);
+
+        foreach (TeammateAI_New mate in teammates)
+        {
+            if (mate == null || mate == this)
+                continue;
+
+            float d =
+                Vector3.Distance(
+                    mate.transform.position,
+                    ball.transform.position);
+
+            if (d < myDistance)
+            {
+                // é©ï™ÇÊÇËãﬂÇ¢ñ°ï˚Ç™Ç¢ÇÈ
+                return;
+            }
+        }
+
+        // é©ï™Ç™àÍî‘ãﬂÇ¢ÇÃÇ≈éÊÇËÇ…çsÇ≠
+        agent.SetDestination(ball.transform.position);
+
+        if (myDistance < 2f)
+        {
+            TakeBall(ball);
+        }
     }
 }
