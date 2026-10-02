@@ -108,6 +108,5 @@ public class BallController : MonoBehaviour
             rb.AddForce(direction.normalized * power, ForceMode.Impulse);
 
         }
-
     }
 }

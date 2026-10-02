@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -16,11 +16,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxLobKickPower = 30f;
     [SerializeField] private float LobKickChargeSpeed = 20f;
     [SerializeField] private float pickupCooldown = 0.3f;
-    [Header("Goalkeeper")]
-    [SerializeField] private bool isGoalkeeper = false;
-    [SerializeField] private float catchDistance = 2f;
-    private float catchCooldown = 0f;
-    [SerializeField] private float catchDelay = 0.5f;
+    [SerializeField] private Slider groundKickSlider;
+    [SerializeField] private Slider lobKickSlider;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private float pickupTimer = 0f;
@@ -37,6 +34,8 @@ public class PlayerController : MonoBehaviour
     private bool isDash;
 
     public bool IsControlled = false;
+    [SerializeField] private bool isEnemy;
+    public bool IsEnemy => isEnemy;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -95,6 +94,7 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+
         if (!IsControlled) return;
         if (currentBall != null)
         {
@@ -108,6 +108,8 @@ public class PlayerController : MonoBehaviour
         {
             groundKickPower += GroundKickchargeSpeed * Time.deltaTime;
             groundKickPower = Mathf.Clamp(groundKickPower, 5f, maxGroundKickPower);
+
+            groundKickSlider.value = groundKickPower / maxGroundKickPower;
         }
         if (pickupTimer > 0)
         {
@@ -117,22 +119,19 @@ public class PlayerController : MonoBehaviour
         {
             lobKickPower += LobKickChargeSpeed * Time.deltaTime;
             lobKickPower = Mathf.Clamp(lobKickPower, 10f, maxLobKickPower);
+
+            lobKickSlider.value = lobKickPower / maxLobKickPower;
         }
-        if (isGoalkeeper)
-        {
-            TryCatchBall();
-        }
-        if (catchCooldown > 0)
-            catchCooldown -= Time.deltaTime;
     }
     private void FixedUpdate()
     {
-        if (!IsControlled) return;
+        if (!IsControlled)
+            return;
 
         float speed = isDash ? dashSpeed : moveSpeed;
 
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
-        
+
         Vector3 velocity = move * speed;
         velocity.y = rb.linearVelocity.y;
 
@@ -169,7 +168,6 @@ public class PlayerController : MonoBehaviour
         {
             ball.SetOwner(this);
             currentBall = ball;
-            catchCooldown = catchDelay;
         }
     }
     private Vector3 GetMouseDirection()
@@ -198,8 +196,13 @@ public class PlayerController : MonoBehaviour
         currentBall.Kick(dir, power, false);
 
         currentBall = null;
+
+        GoalkeeperAI gk=GetComponent<GoalkeeperAI>();
+        if(gk != null)
+        {
+            gk.enabled = true;
+        }
         pickupTimer = pickupCooldown;
-        catchCooldown = catchDelay;
     }
     public void LobPass(Vector3 dir, float power)
     {
@@ -211,6 +214,11 @@ public class PlayerController : MonoBehaviour
         currentBall.Kick(dir, power, true);
 
         currentBall = null;
+        GoalkeeperAI gk = GetComponent<GoalkeeperAI>();
+        if (gk != null)
+        {
+            gk.enabled = true;
+        }
         pickupTimer = pickupCooldown;
     }
     private void OnGroundKickStarted(InputAction.CallbackContext ctx)
@@ -223,6 +231,7 @@ public class PlayerController : MonoBehaviour
     {
         chargingGroundKick = false;
 
+        groundKickSlider.value = 0;
         if (currentBall == null)
             return;
 
@@ -273,7 +282,7 @@ public class PlayerController : MonoBehaviour
     private void OnLobKickCanceled(InputAction.CallbackContext ctx)
     {
         chargingLobKick = false;
-
+        lobKickSlider.value = 0;
         LobPass(GetMouseDirection(), lobKickPower);
     }
     public void ResetPosition()
@@ -288,30 +297,5 @@ public class PlayerController : MonoBehaviour
     {
         currentBall = ball;
     }
-    private void TryCatchBall()
-    {
-        if (catchCooldown > 0)
-            return;
-        BallController ball = FindFirstObjectByType<BallController>();
-
-        if (ball == null)
-            return;
-
-
-        if (ball.Owner != null)
-            return;
-
-        float distance =
-            Vector3.Distance(transform.position,
-                             ball.transform.position);
-
-        if (distance > catchDistance)
-            return;
-
-        ball.SetOwner(this);
-
-        currentBall = ball;
-
-        pickupTimer = pickupCooldown;
-    }
+    
 }

@@ -59,7 +59,6 @@ public class GameManager : MonoBehaviour
         {
             CurrentPlayer.IsControlled = false;
             CurrentPlayer.DisableInput();
-            CurrentPlayer.IsControlled = false;
 
             NavMeshAgent oldAgent = CurrentPlayer.GetComponent<NavMeshAgent>();
             if (oldAgent != null)
@@ -68,6 +67,11 @@ public class GameManager : MonoBehaviour
             TeammateAI_New oldAI = CurrentPlayer.GetComponent<TeammateAI_New>();
             if (oldAI != null)
                 oldAI.enabled = true;
+
+            GoalkeeperAI oldGK = CurrentPlayer.GetComponent<GoalkeeperAI>();
+
+            if (oldGK != null)
+                oldGK.enabled = true;
         }
 
         CurrentPlayer = player;
@@ -81,6 +85,11 @@ public class GameManager : MonoBehaviour
         TeammateAI_New newAI = CurrentPlayer.GetComponent<TeammateAI_New>();
         if (newAI != null)
             newAI.enabled = false;
+
+        GoalkeeperAI gk = CurrentPlayer.GetComponent<GoalkeeperAI>();
+
+        if (gk != null)
+            gk.enabled = false;
     }
     public void Goal(bool homeGoal, Rigidbody ballRb)
     {
