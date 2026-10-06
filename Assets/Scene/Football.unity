@@ -1466,7 +1466,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 1
+  canShoot: 0
   teammates:
   - {fileID: 748156153}
   - {fileID: 2106489954}
@@ -1765,7 +1765,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 1
+  canShoot: 0
   teammates:
   - {fileID: 583874510}
   - {fileID: 2106489954}
@@ -4154,7 +4154,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 1
+  canShoot: 0
   teammates:
   - {fileID: 583874510}
   - {fileID: 748156153}
