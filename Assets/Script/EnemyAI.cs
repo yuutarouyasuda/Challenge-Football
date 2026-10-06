@@ -185,13 +185,13 @@ public class EnemyAI : MonoBehaviour
                 bestScore = keepScore;
                 action = ActionType.Keep;
             }
-            Debug.Log(
+            /*Debug.Log(
     $"Shoot:{shootScore} " +
     $"Pass:{passScore} " +
     $"Dribble:{dribbleScore} " +
     $"Escape:{escapeScore} " +
     $"Keep:{keepScore} " +
-    $"=> {action}");
+    $"=> {action}");*/
             switch (action)
             {
                 case ActionType.Shoot:

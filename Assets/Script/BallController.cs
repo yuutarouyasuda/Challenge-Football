@@ -53,7 +53,7 @@ public class BallController : MonoBehaviour
         {
             player.SetCurrentBall(this);
         }
-        GameManager.Instance.OnBallOwnerChanged(owner);
+       // GameManager.Instance.OnBallOwnerChanged(owner);
     }
 
     public void ClearOwner()

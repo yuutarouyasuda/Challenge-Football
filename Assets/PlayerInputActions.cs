@@ -127,6 +127,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Switch Player"",
+                    ""type"": ""Button"",
+                    ""id"": ""2d6343d0-b16a-461f-b4ee-fa41c9653a2e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -228,6 +237,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""LobKick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0556af13-6048-4074-a167-5f4727aa62b5"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Switch Player"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -240,6 +260,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_GroundKick = m_Player.FindAction("GroundKick", throwIfNotFound: true);
         m_Player_LobKick = m_Player.FindAction("LobKick", throwIfNotFound: true);
+        m_Player_SwitchPlayer = m_Player.FindAction("Switch Player", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -324,6 +345,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_GroundKick;
     private readonly InputAction m_Player_LobKick;
+    private readonly InputAction m_Player_SwitchPlayer;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -351,6 +373,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/LobKick".
         /// </summary>
         public InputAction @LobKick => m_Wrapper.m_Player_LobKick;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SwitchPlayer".
+        /// </summary>
+        public InputAction @SwitchPlayer => m_Wrapper.m_Player_SwitchPlayer;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -389,6 +415,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @LobKick.started += instance.OnLobKick;
             @LobKick.performed += instance.OnLobKick;
             @LobKick.canceled += instance.OnLobKick;
+            @SwitchPlayer.started += instance.OnSwitchPlayer;
+            @SwitchPlayer.performed += instance.OnSwitchPlayer;
+            @SwitchPlayer.canceled += instance.OnSwitchPlayer;
         }
 
         /// <summary>
@@ -412,6 +441,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @LobKick.started -= instance.OnLobKick;
             @LobKick.performed -= instance.OnLobKick;
             @LobKick.canceled -= instance.OnLobKick;
+            @SwitchPlayer.started -= instance.OnSwitchPlayer;
+            @SwitchPlayer.performed -= instance.OnSwitchPlayer;
+            @SwitchPlayer.canceled -= instance.OnSwitchPlayer;
         }
 
         /// <summary>
@@ -480,5 +512,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLobKick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Switch Player" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwitchPlayer(InputAction.CallbackContext context);
     }
 }

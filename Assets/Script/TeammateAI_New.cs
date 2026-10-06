@@ -22,7 +22,13 @@ public class TeammateAI_New : MonoBehaviour
     public bool isReceiver = false;
 
     private NavMeshAgent agent;
-    
+    private PlayerData playerData;
+
+
+    public void SetPlayerData(PlayerData data)
+    {
+        playerData = data;
+    }
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -31,8 +37,24 @@ public class TeammateAI_New : MonoBehaviour
         enemies=FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
     }
 
+    private float MoveSoeed
+    {
+        get
+        {
+            if (playerData == null)
+                return agent.speed;
+            return playerData.speed * 0.9f;
+        }
+    }
+    private bool initialized = false;
+    public void Initialize()
+    {
+        initialized = true;
+    }
     private void Update()
     {
+        if (initialized)
+            return;
         BallController ball = FindAnyObjectByType<BallController>();
         if (ball != null && ball.Owner == null)
         {
@@ -463,7 +485,8 @@ public class TeammateAI_New : MonoBehaviour
                 return;
             }
         }
-
+        if (!agent.isOnNavMesh)
+            return;
         // é©ï™Ç™àÍî‘ãﬂÇ¢ÇÃÇ≈éÊÇËÇ…çsÇ≠
         agent.SetDestination(ball.transform.position);
 
@@ -472,4 +495,5 @@ public class TeammateAI_New : MonoBehaviour
             TakeBall(ball);
         }
     }
+   
 }

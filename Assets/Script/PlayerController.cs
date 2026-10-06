@@ -1,6 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -29,23 +30,22 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private BallController currentBall;
     private PlayerInputActions inputActions;
-    private TeammateAI_New teammateAI;
     private Vector2 moveInput;
     private bool isDash;
-
     public bool IsControlled = false;
-    [SerializeField] private bool isEnemy;
-    public bool IsEnemy => isEnemy;
+    private TeammateAI_New teammateAI;
+    private NavMeshAgent agent;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        teammateAI = GetComponent<TeammateAI_New>();
+        agent = GetComponent<NavMeshAgent>();
 
         rb.constraints = RigidbodyConstraints.FreezeRotationX |
                          RigidbodyConstraints.FreezeRotationZ;
 
         inputActions = new PlayerInputActions();
 
-        teammateAI = GetComponent<TeammateAI_New>();
 
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
@@ -78,6 +78,37 @@ public class PlayerController : MonoBehaviour
         chargingGroundKick = false;
         chargingLobKick = false;
     }
+    public float MoveSpeed
+    {
+        get
+        {
+            if (playerData == null)
+                return moveSpeed;
+
+            return playerData.speed;
+        }
+    }
+
+    public float KickPower
+    {
+        get
+        {
+            if (playerData == null)
+                return maxGroundKickPower;
+
+            return playerData.kick;
+        }
+    }
+    public float DashSpeed
+    {
+        get
+        {
+            if (playerData == null)
+                return dashSpeed;
+
+            return playerData.speed * 1.5f;
+        }
+    }
     private void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
@@ -107,9 +138,9 @@ public class PlayerController : MonoBehaviour
         if (chargingGroundKick)
         {
             groundKickPower += GroundKickchargeSpeed * Time.deltaTime;
-            groundKickPower = Mathf.Clamp(groundKickPower, 5f, maxGroundKickPower);
+            groundKickPower = Mathf.Clamp(groundKickPower, 5f, KickPower);
 
-            groundKickSlider.value = groundKickPower / maxGroundKickPower;
+            groundKickSlider.value = groundKickPower / KickPower;
         }
         if (pickupTimer > 0)
         {
@@ -127,8 +158,9 @@ public class PlayerController : MonoBehaviour
     {
         if (!IsControlled)
             return;
+        Debug.Log(moveInput);
 
-        float speed = isDash ? dashSpeed : moveSpeed;
+        float speed = isDash ? DashSpeed : MoveSpeed*0.8f;
 
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
 
@@ -147,6 +179,12 @@ public class PlayerController : MonoBehaviour
                     targetRotation,
                     rotateSpeed * Time.fixedDeltaTime));
         }
+    }
+    private PlayerData playerData;
+    private PlayerData PlayerData => playerData;
+    public void SetPlayerData(PlayerData data)
+    {
+        playerData = data;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -297,5 +335,23 @@ public class PlayerController : MonoBehaviour
     {
         currentBall = ball;
     }
-    
+
+    public void SetControl(bool value)
+    {
+        Debug.Log(name + " SetControl : " + value);
+
+        IsControlled = value;
+
+        if (value)
+            EnableInput();
+        else
+            DisableInput();
+
+        if (teammateAI != null)
+            teammateAI.enabled = !value;
+
+        if (agent != null)
+            agent.enabled = !value;
+    }
+
 }

@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
             player.ResetPosition();
         }
     }
-    public void OnBallOwnerChanged(MonoBehaviour owner)
+    /*public void OnBallOwnerChanged(MonoBehaviour owner)
     {
         PlayerController player = owner.GetComponent<PlayerController>();
 
@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour
         {
             ChangePlayer(player);
         }
-    }
+    }*/
     private void UpdateTimerUI()
     {
         int minutes=Mathf.FloorToInt(currentTime/60);
