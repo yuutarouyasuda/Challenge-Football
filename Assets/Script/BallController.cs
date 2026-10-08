@@ -73,13 +73,40 @@ public class BallController : MonoBehaviour
         if (Owner == null)
             return;
 
-        Vector3 target =
-    Owner.transform.position +
-    Owner.transform.forward * holdDistance +
-    Vector3.up * holdHeight;
+        // 所有者を取得
+        PlayerController player = Owner as PlayerController;
+        EnemyAI enemy = Owner as EnemyAI;
 
-        // ボールを足元に固定
-        rb.MovePosition(target);
+        // 初期値
+        float currentHoldDistance = holdDistance;
+        float currentDribbleSpeed = dribbleSpeed;
+
+        // プレイヤーならPlayerDataのドリブル能力を使用
+        if (player != null)
+        {
+            currentHoldDistance = Mathf.Lerp(1.5f, 0.8f, player.Dribble / 100f);
+            currentDribbleSpeed = Mathf.Lerp(4f, 12f, player.Dribble / 100f);
+        }
+        // 敵ならEnemyAIのドリブル能力を使用
+        else if (enemy != null)
+        {
+            currentHoldDistance = Mathf.Lerp(1.5f, 0.8f, enemy.Dribble / 100f);
+            currentDribbleSpeed = Mathf.Lerp(4f, 12f, enemy.Dribble / 100f);
+        }
+
+        // ボールの目標位置
+        Vector3 target =
+            Owner.transform.position +
+            Owner.transform.forward * currentHoldDistance +
+            Vector3.up * holdHeight;
+
+        // 一定速度で目標位置へ近づける
+        Vector3 nextPosition = Vector3.MoveTowards(
+            rb.position,
+            target,
+            currentDribbleSpeed * Time.fixedDeltaTime);
+
+        rb.MovePosition(nextPosition);
 
         // ボールが勝手に転がらないようにする
         rb.linearVelocity = Vector3.zero;

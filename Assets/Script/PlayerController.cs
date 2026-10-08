@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pickupCooldown = 0.3f;
     [SerializeField] private Slider groundKickSlider;
     [SerializeField] private Slider lobKickSlider;
+    [SerializeField] private float defaultDribble = 50f;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private float pickupTimer = 0f;
@@ -97,6 +98,16 @@ public class PlayerController : MonoBehaviour
                 return maxGroundKickPower;
 
             return playerData.kick;
+        }
+    }
+    public float Dribble
+    {
+        get
+        {
+            if (playerData == null)
+                return defaultDribble;
+
+            return playerData.dribble;
         }
     }
     public float DashSpeed

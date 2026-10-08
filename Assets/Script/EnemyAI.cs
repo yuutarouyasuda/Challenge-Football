@@ -33,6 +33,9 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private EnemyAI[] teammates;
     [SerializeField] private float kickOffPassPower = 20f;
     [SerializeField] private EnemyAI kickOffReceiver;
+    [SerializeField, Range(1, 100)]
+    private int dribble = 50;
+    public float Dribble => dribble;
     private EnemyManager enemyManager;
     private float passTimer = 0f;
     private BallController currentBall;
