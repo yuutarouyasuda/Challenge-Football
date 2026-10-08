@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerSwitchManager : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class PlayerSwitchManager : MonoBehaviour
     [SerializeField] private BallController ball;
     [SerializeField] private GameObject cursor;
     [SerializeField] private float cursorHeight = 2f;
+    [SerializeField] private GameObject nextCursor;
     private int currentIndex;
     private PlayerInputActions inputActions;
     private bool switchPressed;
@@ -35,17 +37,27 @@ public class PlayerSwitchManager : MonoBehaviour
                 previousOwner = owner;
                 ChangeBallOwnerPlayer();
             }
-
-            return;
         }
-
-        previousOwner = null;
-
-        if (switchPressed)
+        else
         {
-            SwitchPlayer();
-            switchPressed = false;
+            previousOwner = null;
+
+            if (switchPressed)
+            {
+                SwitchPlayer();
+                switchPressed = false;
+            }
         }
+
+        cursor.transform.position =
+            fieldPlayers[currentIndex].transform.position +
+            Vector3.up * cursorHeight;
+
+        int nextIndex = GetNearestPlayerIndex();
+
+        nextCursor.transform.position =
+            fieldPlayers[nextIndex].transform.position +
+            Vector3.up * cursorHeight;
     }
     private void Awake()
     {
@@ -66,13 +78,8 @@ public class PlayerSwitchManager : MonoBehaviour
     }
     private void SwitchPlayer()
     {
-        currentIndex++;
-
-        if(currentIndex>=fieldPlayers.Length)
-        {
-            currentIndex = 0;
-        }
-        SetControlPlayer(currentIndex);
+        int nextIndex = GetNearestPlayerIndex();
+        SetControlPlayer(nextIndex);
     }
     private void SetControlPlayer(int index)
     {
@@ -126,5 +133,29 @@ public class PlayerSwitchManager : MonoBehaviour
                 return;
             }
         }
+    }
+    private int GetNearestPlayerIndex()
+    {
+        float nearestDistance = Mathf.Infinity;
+        int nearestIndex = currentIndex;
+
+        for (int i = 0; i < fieldPlayers.Length; i++)
+        {
+            // ¡‘€ì‚µ‚Ä‚¢‚é‘IŽè‚ÍœŠO
+            if (i == currentIndex)
+                continue;
+
+            float distance = Vector3.Distance(
+                fieldPlayers[i].transform.position,
+                ball.transform.position);
+
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestIndex = i;
+            }
+        }
+
+        return nearestIndex;
     }
 }
