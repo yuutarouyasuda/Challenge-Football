@@ -86,6 +86,20 @@ public class BallController : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
 
     }
+    public void ResetBall(Vector3 position)
+    {
+        transform.position = position;
+
+        Rigidbody rb=GetComponent<Rigidbody>();
+
+        if(rb!=null)
+        {
+            rb.linearVelocity=Vector3.zero;
+            rb.angularVelocity=Vector3.zero;
+        }
+
+        Owner = null;
+    }
     public void Kick(Vector3 direction,float power,bool isLob)
     {
         LastKicker = Owner;

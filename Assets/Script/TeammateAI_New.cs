@@ -53,6 +53,12 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
+        if (GameManager.Instance.IsKickOff ||
+    GameManager.Instance.IsGameStop)
+        {
+            agent.ResetPath();
+            return;
+        }
         if (initialized)
             return;
         BallController ball = FindAnyObjectByType<BallController>();

@@ -31,6 +31,8 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform ownGoal;
     [SerializeField] private bool canShoot = false;
     [SerializeField] private EnemyAI[] teammates;
+    [SerializeField] private float kickOffPassPower = 20f;
+    [SerializeField] private EnemyAI kickOffReceiver;
     private EnemyManager enemyManager;
     private float passTimer = 0f;
     private BallController currentBall;
@@ -43,6 +45,21 @@ public class EnemyAI : MonoBehaviour
     private bool isPassing;
     private float bestPassScore;
     private float afterKickMoveTimer = 0f;
+    private Vector3 startPosition;
+
+    private void Start()
+    {
+        startPosition = transform.position;
+    }
+    public void ResetPosition()
+    {
+        transform.position = startPosition;
+
+        if (GetComponent<NavMeshAgent>() != null)
+        {
+            GetComponent<NavMeshAgent>().ResetPath();
+        }
+    }
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -51,6 +68,18 @@ public class EnemyAI : MonoBehaviour
     }
     private void Update()
     {
+        if(isKickOffPlayer)
+        {
+            KickOffPass();
+            return;
+        }
+        if (GameManager.Instance.IsKickOff ||
+    GameManager.Instance.IsGameStop)
+        {
+            agent.ResetPath();
+            return;
+        }
+
         PlayerController[] players =
     FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         agent.speed = enemyManager.moveSpeed;
@@ -207,7 +236,7 @@ public class EnemyAI : MonoBehaviour
                         shootDir.normalized,
                         enemyManager.shootPower,
                         false);
-
+                  
                     currentBall = null;
                     noPickupTimer = 0.5f;
                     afterKickMoveTimer = 0.5f;
@@ -288,6 +317,80 @@ public class EnemyAI : MonoBehaviour
 
                     break;
             }
+        }
+    }
+    private EnemyAI FindKickOffReceiver()
+    {
+        EnemyAI nearest = null;
+        float distance = Mathf.Infinity;
+
+        foreach (EnemyAI mate in teammates)
+        {
+            if (mate == null || mate == this)
+                continue;
+
+            float d = Vector3.Distance(
+                transform.position,
+                mate.transform.position);
+
+            if (d < distance)
+            {
+                distance = d;
+                nearest = mate;
+            }
+        }
+
+        return nearest;
+    }
+    private bool isKickOffPlayer = false;
+public void SetKickOffPlayer()
+    {
+        isKickOffPlayer = true;
+    }
+    private void KickOffPass()
+    {
+        if (kickOffReceiver == null)
+        {
+            Debug.Log("キックオフ受け手なし");
+            return;
+        }
+
+
+        BallController ball =
+            FindAnyObjectByType<BallController>();
+
+
+        Vector3 dir =
+            kickOffReceiver.transform.position
+            - transform.position;
+
+
+        dir.y = 0;
+
+
+        ball.Kick(
+            dir.normalized,
+            kickOffPassPower,
+            false
+        );
+
+
+        Debug.Log(
+            name + " → " +
+            kickOffReceiver.name +
+            "へキックオフパス"
+        );
+
+
+        isKickOffPlayer = false;
+
+
+        KickOffManager kickOff =
+            FindAnyObjectByType<KickOffManager>();
+
+        if (kickOff != null)
+        {
+            kickOff.EndKickOff();
         }
     }
     private EnemyAI FindBestReceiver()
@@ -542,7 +645,7 @@ public class EnemyAI : MonoBehaviour
             dir.normalized,
             enemyManager.passPower,
             false);
-
+        
         currentBall = null;
 
         noPickupTimer = 0.5f;

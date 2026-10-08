@@ -234,7 +234,10 @@ public class PlayerController : MonoBehaviour
         currentBall.Kick(dir, power, false);
 
         currentBall = null;
-
+        if(GameManager.Instance.IsKickOff)
+        {
+            GameManager.Instance.EndKickOffState();
+        }
         GoalkeeperAI gk=GetComponent<GoalkeeperAI>();
         if(gk != null)
         {
@@ -250,8 +253,12 @@ public class PlayerController : MonoBehaviour
         dir.y = 0.5f;
 
         currentBall.Kick(dir, power, true);
-
+       
         currentBall = null;
+        if (GameManager.Instance.IsKickOff)
+        {
+            GameManager.Instance.EndKickOffState();
+        }
         GoalkeeperAI gk = GetComponent<GoalkeeperAI>();
         if (gk != null)
         {

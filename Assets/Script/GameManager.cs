@@ -3,10 +3,12 @@ using TMPro;
 using Unity.VisualScripting;
 using Unity.Multiplayer.PlayMode;
 using UnityEngine.AI;
+using System.Collections;
 public class GameManager : MonoBehaviour
 {
     public PlayerController CurrentPlayer {  get; private set; }
-
+    public bool IsKickOff {  get; private set; }
+    public bool IsGameStop {  get; private set; }
     public static GameManager Instance;
     [Header("Score")]
     public int homeScore;
@@ -20,7 +22,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text homeScoreText;
     [SerializeField] private TMP_Text awayScoreText;
     [SerializeField] private TMP_Text timerText;
-    [SerializeField] private PlayerController firstPlayer;
+    [SerializeField]private KickOffManager kickOffManager;
+    [SerializeField] private float goalRestartDelay = 5f;
+    [SerializeField] private float beforeKickOffDelay = 2f;
     private float currentTime;
 
     private void Awake()
@@ -35,7 +39,7 @@ public class GameManager : MonoBehaviour
         UpdateTimerUI();
         UpdateScoreUI();
 
-        ChangePlayer(firstPlayer);
+        kickOffManager.StartKickOff(kickOffManager.GetHomeKickOffPlayer());
     }
 
     // Update is called once per frame
@@ -52,6 +56,15 @@ public class GameManager : MonoBehaviour
             UpdateTimerUI();
             EndMatch();
         }
+    }
+    public void StartKickOffState()
+    {
+        IsKickOff = true;
+    }
+    public void EndKickOffState()
+    {
+        IsKickOff = false;
+        Debug.Log("キックオフ終了");
     }
     public void ChangePlayer(PlayerController player)
     {
@@ -93,25 +106,72 @@ public class GameManager : MonoBehaviour
     }
     public void Goal(bool homeGoal, Rigidbody ballRb)
     {
+        MonoBehaviour nextKickOffPlayer;
+
+
         if (homeGoal)
+        {
             awayScore++;
+            nextKickOffPlayer = kickOffManager.GetHomeKickOffPlayer();
+        }
         else
+        {
             homeScore++;
+            nextKickOffPlayer = kickOffManager.GetAwayKickOffPlayer();
+        }
+
 
         UpdateScoreUI();
-        Debug.Log($"{homeScore}-{awayScore}");
 
-        //ボールを中央へ戻す
-        ballRb.transform.position = ballSpawnPoint.position;
-        ballRb.linearVelocity = Vector3.zero;
-        ballRb.angularVelocity = Vector3.zero;
+        IsGameStop = true;
 
-        //プレイヤーを初期位置へ戻す
-        PlayerController[] Players = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-        foreach (PlayerController player in Players)
+        // 試合停止
+        IsKickOff = true;
+        Debug.Log("ゴール後停止開始 : " + IsKickOff);
+
+
+        // すぐ配置
+        PlayerController[] players =
+            FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+        foreach (PlayerController player in players)
         {
             player.ResetPosition();
         }
+
+
+        EnemyAI[] enemies =
+            FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
+
+        foreach (EnemyAI enemy in enemies)
+        {
+            enemy.ResetPosition();
+        }
+
+        BallController ball =FindAnyObjectByType<BallController>();
+        if(ball!=null)
+        {
+            ball.ResetBall(ballSpawnPoint.position);
+        }
+        StartCoroutine(RestartAfterGoal(nextKickOffPlayer));
+    }
+    private IEnumerator RestartAfterGoal(MonoBehaviour nextKickOffPlayer)
+    {
+        Debug.Log("選手・ボール配置完了");
+
+        // 配置後待機
+        yield return new WaitForSeconds(goalRestartDelay);
+
+
+        // キックオフ準備
+        IsGameStop = false;
+
+
+        // 少し間を作る
+        yield return new WaitForSeconds(beforeKickOffDelay);
+
+
+        kickOffManager.StartKickOff(nextKickOffPlayer);
     }
     /*public void OnBallOwnerChanged(MonoBehaviour owner)
     {
