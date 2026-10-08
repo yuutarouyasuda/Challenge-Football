@@ -136,6 +136,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tackle"",
+                    ""type"": ""Button"",
+                    ""id"": ""8c12650c-a6f7-4b32-96cb-c3413cc203c3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -248,6 +257,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Switch Player"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d9817fec-c7ee-41c6-84e2-5fceae21bfe8"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tackle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -261,6 +281,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_GroundKick = m_Player.FindAction("GroundKick", throwIfNotFound: true);
         m_Player_LobKick = m_Player.FindAction("LobKick", throwIfNotFound: true);
         m_Player_SwitchPlayer = m_Player.FindAction("Switch Player", throwIfNotFound: true);
+        m_Player_Tackle = m_Player.FindAction("Tackle", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -346,6 +367,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_GroundKick;
     private readonly InputAction m_Player_LobKick;
     private readonly InputAction m_Player_SwitchPlayer;
+    private readonly InputAction m_Player_Tackle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -377,6 +399,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/SwitchPlayer".
         /// </summary>
         public InputAction @SwitchPlayer => m_Wrapper.m_Player_SwitchPlayer;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Tackle".
+        /// </summary>
+        public InputAction @Tackle => m_Wrapper.m_Player_Tackle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -418,6 +444,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchPlayer.started += instance.OnSwitchPlayer;
             @SwitchPlayer.performed += instance.OnSwitchPlayer;
             @SwitchPlayer.canceled += instance.OnSwitchPlayer;
+            @Tackle.started += instance.OnTackle;
+            @Tackle.performed += instance.OnTackle;
+            @Tackle.canceled += instance.OnTackle;
         }
 
         /// <summary>
@@ -444,6 +473,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @SwitchPlayer.started -= instance.OnSwitchPlayer;
             @SwitchPlayer.performed -= instance.OnSwitchPlayer;
             @SwitchPlayer.canceled -= instance.OnSwitchPlayer;
+            @Tackle.started -= instance.OnTackle;
+            @Tackle.performed -= instance.OnTackle;
+            @Tackle.canceled -= instance.OnTackle;
         }
 
         /// <summary>
@@ -519,5 +551,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSwitchPlayer(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Tackle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTackle(InputAction.CallbackContext context);
     }
 }

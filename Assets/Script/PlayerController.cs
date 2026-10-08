@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [Header("Move")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashSpeed = 8f;
+    [SerializeField] private float defaultDribble = 50f;
     [Header("Gorund Kick")]
     [SerializeField] private float rotateSpeed = 10f;
     [SerializeField] private float maxGroundKickPower = 15f;
@@ -19,7 +20,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pickupCooldown = 0.3f;
     [SerializeField] private Slider groundKickSlider;
     [SerializeField] private Slider lobKickSlider;
-    [SerializeField] private float defaultDribble = 50f;
+    [Header("Tackle")]
+    [SerializeField] private float tackleRange = 1.5f;
+    [SerializeField] private float tackleCooldown = 1f;
+    [SerializeField] private float tackleAngle = 60f;
+
+    private float tackleTimer;
     private Vector3 startPosition;
     private Quaternion startRotation;
     private float pickupTimer = 0f;
@@ -59,6 +65,8 @@ public class PlayerController : MonoBehaviour
 
         inputActions.Player.LobKick.started += OnLobKickStarted;
         inputActions.Player.LobKick.canceled += OnLobKickCanceled;
+  
+        inputActions.Player.Tackle.performed += OnTackle;
     }
 
     private void OnDisable()
@@ -163,6 +171,10 @@ public class PlayerController : MonoBehaviour
             lobKickPower = Mathf.Clamp(lobKickPower, 10f, maxLobKickPower);
 
             lobKickSlider.value = lobKickPower / maxLobKickPower;
+        }
+        if (tackleTimer>0)
+        {
+            tackleTimer -= Time.deltaTime;
         }
     }
     private void FixedUpdate()
@@ -371,5 +383,68 @@ public class PlayerController : MonoBehaviour
         if (agent != null)
             agent.enabled = !value;
     }
+    private void OnTackle(InputAction.CallbackContext ctx)
+    {
+        if (!IsControlled)
+            return;
 
+        if (tackleTimer > 0)
+            return;
+
+        tackleTimer = tackleCooldown;
+
+
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            tackleRange
+        );
+
+
+        foreach (Collider hit in hits)
+        {
+            BallController ball =
+                hit.GetComponent<BallController>();
+
+            if (ball == null)
+                continue;
+
+
+            // 誰も持っていないボール
+            if (ball.Owner == null)
+            {
+                ball.SetOwner(this);
+                currentBall = ball;
+                return;
+            }
+
+
+            // 自分が持っている場合
+            if (ball.Owner == this)
+                return;
+
+
+            // 相手との方向確認
+            Vector3 dir =
+                ball.Owner.transform.position -
+                transform.position;
+
+            dir.y = 0;
+
+
+            float angle =
+                Vector3.Angle(
+                    transform.forward,
+                    dir
+                );
+
+
+            if (angle <= tackleAngle)
+            {
+                ball.SetOwner(this);
+                currentBall = ball;
+
+                Debug.Log("タックル成功");
+            }
+        }
+    }
 }
