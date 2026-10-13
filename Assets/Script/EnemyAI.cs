@@ -33,6 +33,14 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private EnemyAI[] teammates;
     [SerializeField] private float kickOffPassPower = 20f;
     [SerializeField] private EnemyAI kickOffReceiver;
+    [Header("Tackle")]
+    [SerializeField] private float tackleRange = 1.5f;
+    [SerializeField] private float tackleAngle = 60f;
+    [SerializeField] private float tackleCooldown = 1f;
+    [SerializeField] private float tackleDash = 2f;
+
+    private float tackleTimer;
+
     [SerializeField, Range(1, 100)]
     private int dribble = 50;
     public float Dribble => dribble;
@@ -49,6 +57,7 @@ public class EnemyAI : MonoBehaviour
     private float bestPassScore;
     private float afterKickMoveTimer = 0f;
     private Vector3 startPosition;
+    private Rigidbody rb;
 
     private void Start()
     {
@@ -68,6 +77,8 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
 
         enemyManager = FindFirstObjectByType<EnemyManager>();
+
+        rb=GetComponent<Rigidbody>();
     }
     private void Update()
     {
@@ -82,7 +93,6 @@ public class EnemyAI : MonoBehaviour
             agent.ResetPath();
             return;
         }
-
         PlayerController[] players =
     FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
         agent.speed = enemyManager.moveSpeed;
@@ -93,6 +103,10 @@ public class EnemyAI : MonoBehaviour
         if (noPickupTimer>0f)
         {
             noPickupTimer -= Time.deltaTime;
+        }
+        if(tackleTimer>0f)
+        {
+            tackleTimer -= Time.deltaTime;
         }
         if (afterKickMoveTimer > 0f)
         {
@@ -522,7 +536,7 @@ public void SetKickOffPlayer()
         float distance =
             Vector3.Distance(transform.position, ball.position);
 
-        if (distance < 1.2f)
+        if (distance <tackleRange&&tackleTimer<=0)
         {
 
             if (ballController.LastKicker == this)
@@ -531,8 +545,7 @@ public void SetKickOffPlayer()
                 ballController.CanSteal &&
                 ballController.Owner != this)
             {
-                ballController.SetOwner(this);
-                currentBall = ballController;
+                TryTackle(ballController);
                 passTimer = enemyManager.passCooldown;
             }
         }
@@ -1025,5 +1038,38 @@ public void SetKickOffPlayer()
         {
             agent.SetDestination(hit.position);
         }
+    }
+   
+    private void TryTackle(BallController ball)
+    {
+        if (tackleTimer > 0f)
+            return;
+
+        if (ball.Owner == null)
+            return;
+
+        if (ball.Owner == this)
+            return;
+
+        Vector3 dir = ball.Owner.transform.position - transform.position;
+        dir.y = 0;
+
+        float angle = Vector3.Angle(transform.forward, dir);
+
+        if (angle > tackleAngle)
+            return;
+
+        if (Vector3.Distance(transform.position, ball.Owner.transform.position) > tackleRange)
+            return;
+
+        tackleTimer = tackleCooldown;
+
+        rb.AddForce(
+            transform.forward * tackleDash,
+            ForceMode.VelocityChange);
+        ball.SetOwner(this);
+        currentBall = ball;
+
+        Debug.Log(name + " É^ÉbÉNÉãê¨å˜");
     }
 }

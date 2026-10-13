@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float tackleRange = 1.5f;
     [SerializeField] private float tackleCooldown = 1f;
     [SerializeField] private float tackleAngle = 60f;
+    [SerializeField] private float tackleDash = 2f;
 
     private float tackleTimer;
     private Vector3 startPosition;
@@ -383,6 +384,16 @@ public class PlayerController : MonoBehaviour
         if (agent != null)
             agent.enabled = !value;
     }
+    public float Defence
+    {
+        get
+        {
+            if (playerData == null)
+                return 50f;
+
+            return playerData.defence;
+        }
+    }
     private void OnTackle(InputAction.CallbackContext ctx)
     {
         if (!IsControlled)
@@ -393,23 +404,24 @@ public class PlayerController : MonoBehaviour
 
         tackleTimer = tackleCooldown;
 
+        rb.AddForce(transform.forward * tackleDash,
+            ForceMode.VelocityChange);
 
+        TryStealBall();
+    }
+    private void TryStealBall()
+    {
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
-            tackleRange
-        );
-
+            tackleRange);
 
         foreach (Collider hit in hits)
         {
-            BallController ball =
-                hit.GetComponent<BallController>();
+            BallController ball = hit.GetComponent<BallController>();
 
             if (ball == null)
                 continue;
 
-
-            // 誰も持っていないボール
             if (ball.Owner == null)
             {
                 ball.SetOwner(this);
@@ -417,26 +429,17 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-
-            // 自分が持っている場合
             if (ball.Owner == this)
                 return;
 
-
-            // 相手との方向確認
             Vector3 dir =
                 ball.Owner.transform.position -
                 transform.position;
 
             dir.y = 0;
 
-
             float angle =
-                Vector3.Angle(
-                    transform.forward,
-                    dir
-                );
-
+                Vector3.Angle(transform.forward, dir);
 
             if (angle <= tackleAngle)
             {
@@ -444,6 +447,7 @@ public class PlayerController : MonoBehaviour
                 currentBall = ball;
 
                 Debug.Log("タックル成功");
+                return;
             }
         }
     }

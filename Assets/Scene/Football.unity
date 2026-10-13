@@ -257,11 +257,12 @@ Transform:
   m_GameObject: {fileID: 23673943}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30, y: 0, z: 5}
+  m_LocalPosition: {x: -36.5, y: 0, z: 1.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 525501553}
+  - {fileID: 1944933098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &144973437
@@ -438,11 +439,12 @@ Transform:
   m_GameObject: {fileID: 158877675}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: 0, z: 5}
+  m_LocalPosition: {x: 36.5, y: 0, z: 1.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 144973438}
+  - {fileID: 1268239319}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
@@ -1045,6 +1047,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 5
   dashSpeed: 8
+  defaultDribble: 50
   rotateSpeed: 10
   maxGroundKickPower: 25
   GroundKickchargeSpeed: 20
@@ -1053,6 +1056,10 @@ MonoBehaviour:
   pickupCooldown: 0.3
   groundKickSlider: {fileID: 476294813}
   lobKickSlider: {fileID: 476294813}
+  tackleRange: 1.5
+  tackleCooldown: 1
+  tackleAngle: 60
+  tackleDash: 2
   IsControlled: 0
 --- !u!54 &488708330
 Rigidbody:
@@ -1219,6 +1226,10 @@ MonoBehaviour:
   - {fileID: 488708337}
   - {fileID: 488708337}
   - {fileID: 488708337}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
   isReceiver: 0
 --- !u!114 &488708338
 MonoBehaviour:
@@ -1534,6 +1545,11 @@ MonoBehaviour:
   - {fileID: 2106489954}
   kickOffPassPower: 30
   kickOffReceiver: {fileID: 748156153}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
+  dribble: 50
   isReceiver: 0
 --- !u!195 &583874511
 NavMeshAgent:
@@ -1835,6 +1851,11 @@ MonoBehaviour:
   - {fileID: 2106489954}
   kickOffPassPower: 20
   kickOffReceiver: {fileID: 0}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
+  dribble: 50
   isReceiver: 0
 --- !u!195 &748156154
 NavMeshAgent:
@@ -2183,6 +2204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 5
   dashSpeed: 8
+  defaultDribble: 50
   rotateSpeed: 10
   maxGroundKickPower: 15
   GroundKickchargeSpeed: 10
@@ -2191,6 +2213,10 @@ MonoBehaviour:
   pickupCooldown: 0.3
   groundKickSlider: {fileID: 476294813}
   lobKickSlider: {fileID: 476294813}
+  tackleRange: 1.5
+  tackleCooldown: 1
+  tackleAngle: 60
+  tackleDash: 2
   IsControlled: 0
 --- !u!54 &823869376
 Rigidbody:
@@ -2241,6 +2267,10 @@ MonoBehaviour:
   - {fileID: 488708337}
   - {fileID: 488708337}
   - {fileID: 488708337}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
   isReceiver: 0
 --- !u!1 &832575517
 GameObject:
@@ -2465,7 +2495,7 @@ Transform:
   m_GameObject: {fileID: 835284837}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -25, y: 1, z: 5}
+  m_LocalPosition: {x: -30.5, y: 1, z: 1.95}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2862,6 +2892,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 5
   dashSpeed: 8
+  defaultDribble: 50
   rotateSpeed: 10
   maxGroundKickPower: 15
   GroundKickchargeSpeed: 10
@@ -2870,6 +2901,10 @@ MonoBehaviour:
   pickupCooldown: 0.3
   groundKickSlider: {fileID: 476294813}
   lobKickSlider: {fileID: 476294813}
+  tackleRange: 1.5
+  tackleCooldown: 1
+  tackleAngle: 60
+  tackleDash: 2
   IsControlled: 0
 --- !u!54 &896785681
 Rigidbody:
@@ -2920,6 +2955,10 @@ MonoBehaviour:
   - {fileID: 488708337}
   - {fileID: 488708337}
   - {fileID: 488708337}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
   isReceiver: 0
 --- !u!1 &988369467
 GameObject:
@@ -3106,7 +3145,7 @@ Transform:
   m_GameObject: {fileID: 996609804}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25, y: 1, z: 5}
+  m_LocalPosition: {x: 30.5, y: 1, z: 1.95}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3126,6 +3165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 5
   dashSpeed: 8
+  defaultDribble: 50
   rotateSpeed: 10
   maxGroundKickPower: 15
   GroundKickchargeSpeed: 10
@@ -3134,6 +3174,10 @@ MonoBehaviour:
   pickupCooldown: 0.3
   groundKickSlider: {fileID: 476294813}
   lobKickSlider: {fileID: 476294813}
+  tackleRange: 1.5
+  tackleCooldown: 1
+  tackleAngle: 60
+  tackleDash: 2
   IsControlled: 0
 --- !u!54 &996609812
 Rigidbody:
@@ -3564,7 +3608,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1268239319}
   m_Layer: 0
-  m_Name: Defence
+  m_Name: home
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3579,11 +3623,11 @@ Transform:
   m_GameObject: {fileID: 1268239318}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 25, y: 0, z: 5}
+  m_LocalPosition: {x: -6.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 158877679}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1287678770
 GameObject:
@@ -3616,7 +3660,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   homeScore: 0
   awayScore: 0
-  matchTime: 300
+  matchTime: 10
   ballSpawnPoint: {fileID: 1807795085}
   homeScoreText: {fileID: 1098605103}
   awayScoreText: {fileID: 893488852}
@@ -4101,7 +4145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1944933098}
   m_Layer: 0
-  m_Name: Offence
+  m_Name: away
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4116,11 +4160,11 @@ Transform:
   m_GameObject: {fileID: 1944933097}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -25, y: 0, z: 5}
+  m_LocalPosition: {x: 6, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 23673947}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1978208491
 GameObject:
@@ -4229,7 +4273,7 @@ Transform:
   m_GameObject: {fileID: 1978208491}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.3498, y: 2.25, z: -7.81016}
+  m_LocalPosition: {x: 52.31, y: 2.25, z: -7.81016}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4344,8 +4388,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 6.3, y: 5, z: 3.9}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4379,7 +4423,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 4a62e5ffe5bb69b45948da5245f8e0ad, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 4a541bcd565a799479b268567d69600a, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &2106489953
 GameObject:
@@ -4424,6 +4468,11 @@ MonoBehaviour:
   - {fileID: 748156153}
   kickOffPassPower: 20
   kickOffReceiver: {fileID: 0}
+  tackleRange: 1.5
+  tackleAngle: 60
+  tackleCooldown: 1
+  tackleDash: 2
+  dribble: 50
   isReceiver: 0
 --- !u!195 &2106489955
 NavMeshAgent:
@@ -4704,8 +4753,6 @@ SceneRoots:
   - {fileID: 1807795085}
   - {fileID: 394166581}
   - {fileID: 1354292284}
-  - {fileID: 1944933098}
-  - {fileID: 1268239319}
   - {fileID: 1007078828}
   - {fileID: 388148674}
   - {fileID: 988369468}

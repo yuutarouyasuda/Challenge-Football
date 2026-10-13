@@ -4,12 +4,17 @@ using Unity.VisualScripting;
 using Unity.Multiplayer.PlayMode;
 using UnityEngine.AI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public PlayerController CurrentPlayer {  get; private set; }
     public bool IsKickOff {  get; private set; }
     public bool IsGameStop {  get; private set; }
     public static GameManager Instance;
+
+    public static int ResultHomeScore;
+    public static int ResultAwayScore;
+    public static string ResultText;
     [Header("Score")]
     public int homeScore;
     public int awayScore;
@@ -196,6 +201,28 @@ public class GameManager : MonoBehaviour
     }
     private void EndMatch()
     {
-        Debug.Log("試合終了");
+        // タイマーを止める
+        enabled = false;
+
+        // スコア保存
+        ResultHomeScore = homeScore;
+        ResultAwayScore = awayScore;
+
+        // 勝敗判定
+        if (homeScore > awayScore)
+        {
+            ResultText = "HOME WIN!";
+        }
+        else if (homeScore < awayScore)
+        {
+            ResultText = "AWAY WIN!";
+        }
+        else
+        {
+            ResultText = "DRAW";
+        }
+
+        // リザルト画面へ
+        SceneManager.LoadScene("ResultScene");
     }
 }

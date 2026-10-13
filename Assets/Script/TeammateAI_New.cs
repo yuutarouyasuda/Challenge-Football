@@ -18,12 +18,21 @@ public class TeammateAI_New : MonoBehaviour
     [SerializeField] private Transform opponentGoal;
     [SerializeField] private EnemyAI[] enemies;
     [SerializeField]private TeammateAI_New[] teammates;
+    [Header("Tackle")]
+    [SerializeField] private float tackleRange = 1.5f;
+    [SerializeField] private float tackleAngle = 60f;
+    [SerializeField] private float tackleCooldown = 1f;
+    [SerializeField] private float tackleDash = 2f;
+
+    private float tackleTimer;
+    private Rigidbody rb;
+    private BallController currentBall;
     public TeammateRole Role { get; set; }
     public bool isReceiver = false;
 
     private NavMeshAgent agent;
     private PlayerData playerData;
-
+    private PlayerController player;
 
     public void SetPlayerData(PlayerData data)
     {
@@ -31,9 +40,13 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Awake()
     {
+        player =GetComponent<PlayerController>();
+
         agent = GetComponent<NavMeshAgent>();
 
-        teammates=FindObjectsByType<TeammateAI_New>(FindObjectsSortMode.None);
+        rb = GetComponent<Rigidbody>();
+
+        teammates = FindObjectsByType<TeammateAI_New>(FindObjectsSortMode.None);
         enemies=FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
     }
 
@@ -53,6 +66,10 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
+        if (tackleTimer > 0)
+        {
+            tackleTimer-= Time.deltaTime;   
+        }
         if (GameManager.Instance.IsKickOff ||
     GameManager.Instance.IsGameStop)
         {
@@ -394,6 +411,15 @@ public class TeammateAI_New : MonoBehaviour
             return;
 
         agent.SetDestination(owner.transform.position);
+        float distance =
+    Vector3.Distance(
+        transform.position,
+        owner.transform.position);
+
+        if (distance < tackleRange)
+        {
+            TryTackle(ball);
+        }
     }
 
     private void CoverMove()
@@ -463,8 +489,6 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void TakeBall(BallController ball)
     {
-        PlayerController player = GetComponent<PlayerController>();
-
         ball.SetOwner(player);
 
         isReceiver = false;
@@ -501,5 +525,39 @@ public class TeammateAI_New : MonoBehaviour
             TakeBall(ball);
         }
     }
-   
+    private void TryTackle(BallController ball)
+    {
+        if (tackleTimer > 0f)
+            return;
+
+        if (ball.Owner == null)
+            return;
+
+        // ñ°ï˚Ç©ÇÁÇÕíDÇÌÇ»Ç¢
+        if (ball.Owner is PlayerController ||
+            ball.Owner is TeammateAI_New)
+            return;
+
+        Vector3 dir =
+            ball.Owner.transform.position - transform.position;
+
+        dir.y = 0;
+
+        float angle =
+            Vector3.Angle(transform.forward, dir);
+
+        if (angle > tackleAngle)
+            return;
+
+        tackleTimer = tackleCooldown;
+
+        rb.AddForce(
+            transform.forward * tackleDash,
+            ForceMode.VelocityChange);
+
+        ball.SetOwner(GetComponent<PlayerController>());
+        currentBall = ball;
+
+        Debug.Log(name + " ñ°ï˚AIÉ^ÉbÉNÉãê¨å˜");
+    }
 }
