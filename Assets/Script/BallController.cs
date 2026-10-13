@@ -12,6 +12,8 @@ public class BallController : MonoBehaviour
     [Header("Ball Position")]
     [SerializeField] private float holdDistance = 1.2f;
     [SerializeField] private float holdHeight = 0.05f;
+    [SerializeField] private float autoSwitchRange = 4f;
+    public MonoBehaviour PassTarget { get; private set; }
     private float stealTimer;
     private Rigidbody rb;
     public bool CanSteal
@@ -28,6 +30,7 @@ public class BallController : MonoBehaviour
 
     public void SetOwner(MonoBehaviour owner)
     {
+        PassTarget = null;
         Owner = owner;
 
         LastKicker = null;
@@ -68,9 +71,33 @@ public class BallController : MonoBehaviour
     }
     private void Update()
     {
-        if (stealTimer>0)
+        if (stealTimer > 0)
         {
-            stealTimer-= Time.deltaTime;
+            stealTimer -= Time.deltaTime;
+        }
+        if (Owner == null)
+        {
+            AutoSwitchPlayer();
+        }
+        // パス対象への自動切り替え
+        if (PassTarget != null && Owner == null)
+        {
+            float distance = Vector3.Distance(
+                transform.position,
+                PassTarget.transform.position);
+
+            if (distance < 10f)
+            {
+                PlayerController player =
+                    PassTarget.GetComponent<PlayerController>();
+
+                if (player != null)
+                {
+                    GameManager.Instance.ChangePlayer(player);
+                }
+
+                PassTarget = null;
+            }
         }
     }
 
@@ -91,13 +118,21 @@ public class BallController : MonoBehaviour
         if (player != null)
         {
             currentHoldDistance = Mathf.Lerp(1.5f, 0.8f, player.Dribble / 100f);
-            currentDribbleSpeed = Mathf.Lerp(4f, 12f, player.Dribble / 100f);
+            currentDribbleSpeed =
+                Mathf.Lerp(
+                    3f,
+                    8f,
+                    player.Dribble / 100f);
         }
         // 敵ならEnemyAIのドリブル能力を使用
         else if (enemy != null)
         {
             currentHoldDistance = Mathf.Lerp(1.5f, 0.8f, enemy.Dribble / 100f);
-            currentDribbleSpeed = Mathf.Lerp(4f, 12f, enemy.Dribble / 100f);
+            currentDribbleSpeed =
+                Mathf.Lerp(
+                    3f,
+                    8f,
+                    enemy.Dribble / 100f);
         }
 
         // ボールの目標位置
@@ -114,10 +149,37 @@ public class BallController : MonoBehaviour
 
         rb.MovePosition(nextPosition);
 
-        // ボールが勝手に転がらないようにする
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        // ドリブル中のボール速度
+        float currentDribbleForce = dribbleForce;
 
+        if (player != null)
+        {
+            currentDribbleForce =
+                Mathf.Lerp(
+                    15f,
+                    40f,
+                    player.Dribble / 100f);
+        }
+        else if (enemy != null)
+        {
+            currentHoldDistance =
+                Mathf.Lerp(
+                    1.5f,
+                    0.8f,
+                    enemy.Dribble / 100f);
+
+            currentDribbleSpeed =
+                Mathf.Lerp(
+                    3f,
+                    8f,
+                    enemy.Dribble / 100f);
+        }
+
+
+        // 少しだけ前へ押し出す
+        //rb.AddForce(
+        //  Owner.transform.forward * currentDribbleForce,
+        //ForceMode.Acceleration);
     }
     public void ResetBall(Vector3 position)
     {
@@ -133,9 +195,15 @@ public class BallController : MonoBehaviour
 
         Owner = null;
     }
-    public void Kick(Vector3 direction,float power,bool isLob)
+    public void Kick(
+    Vector3 direction,
+    float power,
+    bool isLob,
+    MonoBehaviour target = null)
     {
         LastKicker = Owner;
+
+        PassTarget = target;
 
         ClearOwner();
 
@@ -179,4 +247,51 @@ public class BallController : MonoBehaviour
             SetOwner(player);
         }
     }
+    private void AutoSwitchPlayer()
+    {
+        Debug.Log("AutoSwitch");
+
+        PlayerController[] players =
+            FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+        PlayerController nearest = null;
+        float best = autoSwitchRange;
+        foreach (PlayerController player in players)
+        {
+            if (player.GetComponent<TeammateAI_New>() == null)
+                continue;
+
+            float distance =
+                Vector3.Distance(transform.position,
+                                 player.transform.position);
+
+            Debug.Log(player.name + " : " + distance);
+
+            if (distance < best)
+            {
+                best = distance;
+                nearest = player;
+            }
+        }
+
+        Debug.Log("Nearest : " + nearest.name);
+
+        if (nearest != null &&
+            GameManager.Instance.CurrentPlayer != nearest)
+        {
+            Debug.Log("切り替え実行");
+            GameManager.Instance.ChangePlayer(nearest);
+        }
+        if (nearest != null)
+        {
+            Debug.Log("Nearest : " + nearest.name);
+        }
+        else
+        {
+            Debug.Log("Nearestなし");
+        }
+
+      
+    }
+
 }

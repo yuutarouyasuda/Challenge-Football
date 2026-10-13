@@ -11,6 +11,9 @@ public class TeamSetup : MonoBehaviour
     [SerializeField] private Transform dfPosition;
     void Start()
     {
+        Debug.Log(
+        "TeamSetup Player : " + player.name
+    );
         // FW
         player.SetPlayerData(
             TeamDataManager.Instance.forward
@@ -21,8 +24,14 @@ public class TeamSetup : MonoBehaviour
 
         // MF
         teammates[0].SetPlayerData(
-            TeamDataManager.Instance.midfielder
-        );
+    TeamDataManager.Instance.midfielder
+);
+
+        teammates[0]
+            .GetComponent<PlayerController>()
+            .SetPlayerData(
+                TeamDataManager.Instance.midfielder
+            );
 
         NavMeshAgent mfagent =
      teammates[0].GetComponent<NavMeshAgent>();
@@ -32,8 +41,14 @@ public class TeamSetup : MonoBehaviour
 
         // DF
         teammates[1].SetPlayerData(
-            TeamDataManager.Instance.defender
-        );
+     TeamDataManager.Instance.defender
+ );
+
+        teammates[1]
+            .GetComponent<PlayerController>()
+            .SetPlayerData(
+                TeamDataManager.Instance.defender
+            );
 
         NavMeshAgent dfagent =
     teammates[1].GetComponent<NavMeshAgent>();

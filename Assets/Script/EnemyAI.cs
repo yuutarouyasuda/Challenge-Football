@@ -530,7 +530,16 @@ public void SetKickOffPlayer()
         }
 
         agent.SetDestination(target);
-       
+
+        if (ballController.Owner != null)
+        {
+            float distance=Vector3.Distance(transform.position, ballController.Owner.transform.position);
+
+            if(distance<tackleRange)
+            {
+                TryTackle(ballController);
+            }
+        }
     }
     private void CutPassMove(BallController ballController)
     {

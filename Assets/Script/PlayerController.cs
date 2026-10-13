@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     private float pickupTimer = 0f;
     private float groundKickPower;
     private bool chargingGroundKick;
-
+    private MonoBehaviour passTarget;
     private float lobKickPower;
     private bool chargingLobKick;
     private Rigidbody rb;
@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour
             if (playerData == null)
                 return maxGroundKickPower;
 
-            return playerData.kick;
+            return Mathf.Lerp(8f, 25f, playerData.kick / 100f);
         }
     }
     public float Dribble
@@ -213,7 +213,23 @@ public class PlayerController : MonoBehaviour
     private PlayerData PlayerData => playerData;
     public void SetPlayerData(PlayerData data)
     {
+        if (data == null)
+        {
+            Debug.LogError(
+                name + " ‚ÉPlayerData‚ª‚ ‚è‚Ü‚¹‚ñ");
+            return;
+        }
+
         playerData = data;
+
+        Debug.Log(
+            name +
+            " PlayerData : " +
+            playerData.playerName);
+    }
+    public PlayerData GetPlayer()
+    {
+        return playerData;
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -260,9 +276,14 @@ public class PlayerController : MonoBehaviour
 
         transform.forward = dir;
 
-        currentBall.Kick(dir, power, false);
-
+        currentBall.Kick(
+     dir,
+     power,
+     false,
+     passTarget
+ );
         currentBall = null;
+        passTarget = null;
         if(GameManager.Instance.IsKickOff)
         {
             GameManager.Instance.EndKickOffState();
@@ -281,8 +302,12 @@ public class PlayerController : MonoBehaviour
 
         dir.y = 0.5f;
 
-        currentBall.Kick(dir, power, true);
-       
+        currentBall.Kick(
+    dir,
+    power,
+    true,
+    passTarget
+);
         currentBall = null;
         if (GameManager.Instance.IsKickOff)
         {
@@ -353,6 +378,8 @@ public class PlayerController : MonoBehaviour
         if (receiver != null)
         {
             receiver.isReceiver = true;
+
+            passTarget = receiver.GetComponent<PlayerController>();
         }
 
         GroundPass(dir, groundKickPower);

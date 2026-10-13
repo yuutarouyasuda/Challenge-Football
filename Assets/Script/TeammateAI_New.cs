@@ -37,6 +37,18 @@ public class TeammateAI_New : MonoBehaviour
     public void SetPlayerData(PlayerData data)
     {
         playerData = data;
+
+        Debug.Log(
+            name + " : " +
+            playerData.playerName +
+            " Speed:" + playerData.speed +
+            " Kick:" + playerData.kick +
+            " Dribble:" + playerData.dribble +
+            " Defence:" + playerData.defence);
+    }
+    public PlayerData GetPlayerData()
+    {
+        return playerData;
     }
     private void Awake()
     {
@@ -59,6 +71,19 @@ public class TeammateAI_New : MonoBehaviour
             return playerData.speed * 0.9f;
         }
     }
+    private float KickPower
+    {
+        get
+        {
+            if (playerData == null)
+                return 20f;
+
+            return Mathf.Lerp(
+                10f,
+                30f,
+                playerData.kick / 100f);
+        }
+    }
     private bool initialized = false;
     public void Initialize()
     {
@@ -66,6 +91,7 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
+        agent.speed = MoveSpeed;
         if (tackleTimer > 0)
         {
             tackleTimer-= Time.deltaTime;   
@@ -545,9 +571,23 @@ public class TeammateAI_New : MonoBehaviour
 
         float angle =
             Vector3.Angle(transform.forward, dir);
-
         if (angle > tackleAngle)
             return;
+
+
+        float success =
+            Mathf.Lerp(
+                0.4f,
+                0.95f,
+                playerData.defence / 100f);
+
+
+        if (Random.value > success)
+        {
+            Debug.Log(name + " タックル失敗");
+            return;
+        }
+
 
         tackleTimer = tackleCooldown;
 
@@ -555,9 +595,9 @@ public class TeammateAI_New : MonoBehaviour
             transform.forward * tackleDash,
             ForceMode.VelocityChange);
 
-        ball.SetOwner(GetComponent<PlayerController>());
+        ball.SetOwner(player);
         currentBall = ball;
 
-        Debug.Log(name + " 味方AIタックル成功");
+        Debug.Log(name + " タックル成功");
     }
 }

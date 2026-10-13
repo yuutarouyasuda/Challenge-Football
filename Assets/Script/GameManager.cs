@@ -73,6 +73,18 @@ public class GameManager : MonoBehaviour
     }
     public void ChangePlayer(PlayerController player)
     {
+        Debug.Log("šššš ChangePlayerŒÄ‚Ño‚µ : " + player.name);
+
+        Debug.Log(
+       "ChangePlayer‘ÎÛ : " + player.name
+   );
+
+        Debug.Log(
+            "Data : " +
+            (player.GetPlayer() == null
+            ? "NULL"
+            : player.GetPlayer().playerName)
+        );
         if (CurrentPlayer != null)
         {
             CurrentPlayer.IsControlled = false;
