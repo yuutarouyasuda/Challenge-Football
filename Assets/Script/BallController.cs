@@ -43,7 +43,7 @@ public class BallController : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
          
-        if(owner is TeammateAI mate)
+        if(owner is TeammateAI_New mate)
         {
             mate.isReceiver = false;
         }
@@ -52,6 +52,12 @@ public class BallController : MonoBehaviour
         if (player != null)
         {
             player.SetCurrentBall(this);
+        }
+
+        EnemyAI enemy =Owner.GetComponent<EnemyAI>();
+        if (enemy != null)
+        {
+            enemy.SetCurrentBall(this);
         }
        // GameManager.Instance.OnBallOwnerChanged(owner);
     }
@@ -62,7 +68,7 @@ public class BallController : MonoBehaviour
     }
     private void Update()
     {
-        if(stealTimer>0)
+        if (stealTimer>0)
         {
             stealTimer-= Time.deltaTime;
         }
@@ -148,6 +154,29 @@ public class BallController : MonoBehaviour
             direction.y = 0;
             rb.AddForce(direction.normalized * power, ForceMode.Impulse);
 
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (Owner != null)
+            return;
+
+        if (stealTimer > 0f)
+            return;
+
+        EnemyAI enemy = collision.collider.GetComponentInParent<EnemyAI>();
+
+        if (enemy != null && enemy != LastKicker)
+        {
+            SetOwner(enemy);
+            return;
+        }
+
+        PlayerController player = collision.collider.GetComponentInParent<PlayerController>();
+
+        if (player != null && player != LastKicker)
+        {
+            SetOwner(player);
         }
     }
 }

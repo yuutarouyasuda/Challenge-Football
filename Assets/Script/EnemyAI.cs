@@ -129,12 +129,6 @@ public class EnemyAI : MonoBehaviour
             }
 
             agent.SetDestination(target);
-            if (Vector3.Distance(transform.position, ball.position) < 1.2f)
-            {
-                ballController.SetOwner(this);
-                currentBall = ballController;
-                isReceiver = false;
-            }
 
             return;
         }
@@ -336,6 +330,10 @@ public class EnemyAI : MonoBehaviour
             }
         }
     }
+    public void SetCurrentBall(BallController ball)
+    {
+        currentBall = ball;
+    }
     private EnemyAI FindKickOffReceiver()
     {
         EnemyAI nearest = null;
@@ -532,23 +530,7 @@ public void SetKickOffPlayer()
         }
 
         agent.SetDestination(target);
-
-        float distance =
-            Vector3.Distance(transform.position, ball.position);
-
-        if (distance <tackleRange&&tackleTimer<=0)
-        {
-
-            if (ballController.LastKicker == this)
-                return;
-            if (noPickupTimer <= 0f &&
-                ballController.CanSteal &&
-                ballController.Owner != this)
-            {
-                TryTackle(ballController);
-                passTimer = enemyManager.passCooldown;
-            }
-        }
+       
     }
     private void CutPassMove(BallController ballController)
     {
