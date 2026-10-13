@@ -50,7 +50,7 @@ public class TeammateAI_New : MonoBehaviour
         enemies=FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
     }
 
-    private float MoveSoeed
+    private float MoveSpeed
     {
         get
         {

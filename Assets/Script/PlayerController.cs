@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
             if (playerData == null)
                 return moveSpeed;
 
-            return playerData.speed;
+            return Mathf.Lerp(3f, 8f, playerData.speed / 100f);
         }
     }
 
@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
             if (playerData == null)
                 return dashSpeed;
 
-            return playerData.speed * 1.5f;
+            return MoveSpeed * 1.5f;
         }
     }
     private void OnMove(InputAction.CallbackContext context)
@@ -157,10 +157,15 @@ public class PlayerController : MonoBehaviour
         }
         if (chargingGroundKick)
         {
-            groundKickPower += GroundKickchargeSpeed * Time.deltaTime;
-            groundKickPower = Mathf.Clamp(groundKickPower, 5f, KickPower);
+            groundKickPower += KickChargeSpeed * Time.deltaTime;
 
-            groundKickSlider.value = groundKickPower / KickPower;
+            groundKickPower = Mathf.Clamp(
+                groundKickPower,
+                5f,
+                KickPower);
+
+            groundKickSlider.value =
+                groundKickPower / KickPower;
         }
         if (pickupTimer > 0)
         {
@@ -290,6 +295,16 @@ public class PlayerController : MonoBehaviour
         }
         pickupTimer = pickupCooldown;
     }
+    public float KickChargeSpeed
+    {
+        get
+        {
+            if (playerData == null)
+                return GroundKickchargeSpeed;
+
+            return Mathf.Lerp(5f, 15f, playerData.kick / 100f);
+        }
+    }
     private void OnGroundKickStarted(InputAction.CallbackContext ctx)
     {
         chargingGroundKick = true;
@@ -394,6 +409,19 @@ public class PlayerController : MonoBehaviour
             return playerData.defence;
         }
     }
+    public float TackleRange
+    {
+        get
+        {
+            if (playerData == null)
+                return tackleRange;
+
+            return Mathf.Lerp(
+                1.0f,
+                2.5f,
+                playerData.defence / 100f);
+        }
+    }
     private void OnTackle(InputAction.CallbackContext ctx)
     {
         if (!IsControlled)
@@ -412,8 +440,8 @@ public class PlayerController : MonoBehaviour
     private void TryStealBall()
     {
         Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            tackleRange);
+     transform.position,
+     TackleRange);
 
         foreach (Collider hit in hits)
         {
@@ -443,10 +471,24 @@ public class PlayerController : MonoBehaviour
 
             if (angle <= tackleAngle)
             {
-                ball.SetOwner(this);
-                currentBall = ball;
+                float success =
+                    Mathf.Lerp(
+                        0.4f,
+                        0.95f,
+                        Defence / 100f);
 
-                Debug.Log("タックル成功");
+                if (Random.value <= success)
+                {
+                    ball.SetOwner(this);
+                    currentBall = ball;
+
+                    Debug.Log("タックル成功");
+                }
+                else
+                {
+                    Debug.Log("タックル失敗");
+                }
+
                 return;
             }
         }
