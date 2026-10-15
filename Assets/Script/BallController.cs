@@ -23,6 +23,8 @@ public class BallController : MonoBehaviour
     public bool IsPassing { get; private set; }
     public MonoBehaviour Owner { get; private set; }
     public MonoBehaviour LastKicker {  get; private set; }
+
+    public MonoBehaviour LastOwner { get; private set; }
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -30,9 +32,9 @@ public class BallController : MonoBehaviour
 
     public void SetOwner(MonoBehaviour owner)
     {
-        PassTarget = null;
+        LastOwner = owner;
 
-        Debug.Log("PassTarget = " + PassTarget);
+        PassTarget = null;
 
         Owner = owner;
 
