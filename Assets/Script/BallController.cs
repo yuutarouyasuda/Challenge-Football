@@ -148,20 +148,35 @@ public class BallController : MonoBehaviour
                     8f,
                     enemy.Dribble / 100f);
         }
+        Rigidbody ownerRb = Owner.GetComponent<Rigidbody>();
 
+        if (ownerRb != null)
+        {
+            currentHoldDistance += ownerRb.linearVelocity.magnitude * 0.05f;
+        }
         // ボールの目標位置
+        Vector3 moveDir;
+
+        if (ownerRb != null && ownerRb.linearVelocity.magnitude > 0.1f)
+        {
+            moveDir = ownerRb.linearVelocity.normalized;
+        }
+        else
+        {
+            moveDir = Owner.transform.forward;
+        }
+
         Vector3 target =
             Owner.transform.position +
-            Owner.transform.forward * currentHoldDistance +
+            moveDir * currentHoldDistance +
             Vector3.up * holdHeight;
 
         // 一定速度で目標位置へ近づける
-        Vector3 nextPosition = Vector3.MoveTowards(
-            rb.position,
-            target,
-            currentDribbleSpeed * Time.fixedDeltaTime);
-
-        rb.MovePosition(nextPosition);
+        rb.MovePosition(
+      Vector3.MoveTowards(
+          rb.position,
+          target,
+          currentDribbleSpeed * 3f * Time.fixedDeltaTime));
 
         // ドリブル中のボール速度
         float currentDribbleForce = dribbleForce;
@@ -174,21 +189,6 @@ public class BallController : MonoBehaviour
                     40f,
                     player.Dribble / 100f);
         }
-        else if (enemy != null)
-        {
-            currentHoldDistance =
-                Mathf.Lerp(
-                    1.5f,
-                    0.8f,
-                    enemy.Dribble / 100f);
-
-            currentDribbleSpeed =
-                Mathf.Lerp(
-                    3f,
-                    8f,
-                    enemy.Dribble / 100f);
-        }
-
 
         // 少しだけ前へ押し出す
         //rb.AddForce(

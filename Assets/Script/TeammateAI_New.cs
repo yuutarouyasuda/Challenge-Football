@@ -91,6 +91,8 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
+        supportTimer-=Time.deltaTime;
+
         if (GameManager.Instance.IsGameStop)
         {
             agent.isStopped = true;
@@ -246,8 +248,18 @@ public class TeammateAI_New : MonoBehaviour
             }
         }
 
-        score += nearestEnemy * 25f;
-
+        if (nearestEnemy < 2f)
+        {
+            score -= 300f;
+        }
+        else if (nearestEnemy < 4f)
+        {
+            score -= 150f;
+        }
+        else
+        {
+            score += nearestEnemy * 20f;
+        }
         //-------------------------------------------------
         // ‡D –¡•û‚Æ‹ß‚·‚¬‚éêŠ‚ÍŒ¸“_
         //-------------------------------------------------
@@ -330,52 +342,37 @@ public class TeammateAI_New : MonoBehaviour
         if (owner == null)
             return;
 
-        Vector3 forward = owner.transform.forward;
-        Vector3 right = owner.transform.right;
-
-        Vector3[] candidates =
-        {
-        owner.transform.position + forward * 6f,
-        owner.transform.position + forward * 4f + right * 5f,
-        owner.transform.position + forward * 4f - right * 5f,
-        owner.transform.position + right * 6f
-    };
-
         Vector3 bestPoint = transform.position;
         float bestScore = float.MinValue;
 
-        foreach (Vector3 p in candidates)
+        float radius = 8f;
+
+        // 16•ûŒü’²‚×‚é
+        for (int i = 0; i < 16; i++)
         {
+            float angle = i * 22.5f;
+
+            Vector3 dir =
+                Quaternion.Euler(0, angle, 0) *
+                owner.transform.forward;
+
+            Vector3 candidate =
+                owner.transform.position +
+                dir * radius;
+
             NavMeshHit hit;
 
-            if (!NavMesh.SamplePosition(p, out hit, 2f, NavMesh.AllAreas))
+            if (!NavMesh.SamplePosition(
+                candidate,
+                out hit,
+                2f,
+                NavMesh.AllAreas))
+            {
                 continue;
-
-            float score = 0;
-
-            // ƒS[ƒ‹‚É‹ß‚¢
-            score -= Vector3.Distance(hit.position, opponentGoal.position);
-
-            // “G‚©‚ç—£‚ê‚é
-            foreach (EnemyAI enemy in enemies)
-            {
-                score += Vector3.Distance(hit.position,
-                                          enemy.transform.position);
             }
 
-            // –¡•û‚Æd‚È‚ç‚È‚¢
-            foreach (TeammateAI_New mate in teammates)
-            {
-                if (mate == this)
-                    continue;
-
-                float d =
-                    Vector3.Distance(hit.position,
-                                     mate.transform.position);
-
-                if (d < 3f)
-                    score -= 100f;
-            }
+            float score =
+                EvaluatePosition(hit.position);
 
             if (score > bestScore)
             {
@@ -384,7 +381,12 @@ public class TeammateAI_New : MonoBehaviour
             }
         }
 
-        agent.SetDestination(bestPoint);
+        if (supportTimer <= 0f)
+        {
+            supportTimer = 0.5f;
+
+            agent.SetDestination(bestPoint);
+        }
     }
     private void RunBehindMove()
     {
