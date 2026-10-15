@@ -31,16 +31,28 @@ public class BallController : MonoBehaviour
     public void SetOwner(MonoBehaviour owner)
     {
         PassTarget = null;
+
+        Debug.Log("PassTarget = " + PassTarget);
+
         Owner = owner;
 
         LastKicker = null;
         stealTimer = stealCooldown;
         IsPassing = false;
 
-        Vector3 target =
-            owner.transform.position +
-            owner.transform.forward * 0.8f +
-            Vector3.up * 0.2f;
+        Vector3 target;
+
+        if (owner.GetComponent<GoalkeeperAI>() != null)
+        {
+            target = owner.transform.position;
+        }
+        else
+        {
+            target =
+                owner.transform.position +
+                owner.transform.forward * 0.8f +
+                Vector3.up * 0.2f;
+        }
 
         rb.position = target;
         rb.linearVelocity = Vector3.zero;
@@ -201,6 +213,10 @@ public class BallController : MonoBehaviour
     bool isLob,
     MonoBehaviour target = null)
     {
+        if (GoalKickManager.Instance != null && GoalKickManager.Instance.IsGoalKick)
+        {
+            GoalKickManager.Instance.EndGoalKick();
+        }
         LastKicker = Owner;
 
         PassTarget = target;
@@ -265,7 +281,6 @@ public class BallController : MonoBehaviour
                 Vector3.Distance(transform.position,
                                  player.transform.position);
 
-            Debug.Log(player.name + " : " + distance);
 
             if (distance < best)
             {
@@ -274,11 +289,9 @@ public class BallController : MonoBehaviour
             }
         }
 
-        Debug.Log("Nearest : " + nearest.name);
 
         if (nearest != null)
         {
-            Debug.Log("Nearest : " + nearest.name);
 
             if (GameManager.Instance.CurrentPlayer != nearest)
             {

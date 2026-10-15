@@ -302,7 +302,8 @@ public class GoalkeeperAI : MonoBehaviour
 
         if (player != null)
         {
-            // –¡•ûGK
+            Debug.Log("GK TryCatch player : " + player.name);
+
             ball.SetOwner(player);
 
             hasBall = true;
@@ -370,6 +371,9 @@ public class GoalkeeperAI : MonoBehaviour
 
             hasBall = false;
 
+            ReturnToGoal();
+
+            GoalKickManager.Instance.EndGoalKick();
             pickupTimer = pickupCooldown;
         }
         pickupTimer = pickupCooldown;
@@ -403,5 +407,12 @@ public class GoalkeeperAI : MonoBehaviour
 
         return best;
     }
-
+    public void StartGoalKickPass()
+    {
+        StartCoroutine(PassCoroutine());
+    }
+    public void ReturnToGoal()
+    {
+        agent.SetDestination(transform.position);
+    }
 }

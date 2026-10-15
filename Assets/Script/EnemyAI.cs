@@ -82,7 +82,14 @@ public class EnemyAI : MonoBehaviour
     }
     private void Update()
     {
-        if(isKickOffPlayer)
+        if (GameManager.Instance.IsGameStop)
+        {
+            agent.isStopped = true;
+            return;
+        }
+
+        agent.isStopped = false;
+        if (isKickOffPlayer)
         {
             KickOffPass();
             return;

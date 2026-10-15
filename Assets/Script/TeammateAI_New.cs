@@ -91,6 +91,13 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
+        if (GameManager.Instance.IsGameStop)
+        {
+            agent.isStopped = true;
+            return;
+        }
+
+        agent.isStopped = false;
         agent.speed = MoveSpeed;
         if (tackleTimer > 0)
         {
@@ -515,6 +522,10 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void TakeBall(BallController ball)
     {
+        // ‚·‚Å‚É’N‚©‚ª‚Á‚Ä‚¢‚é‚È‚çæ‚ç‚È‚¢
+        if (ball.Owner != null)
+            return;
+
         ball.SetOwner(player);
 
         isReceiver = false;

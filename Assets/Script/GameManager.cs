@@ -71,20 +71,28 @@ public class GameManager : MonoBehaviour
         IsKickOff = false;
         Debug.Log("キックオフ終了");
     }
+    public void StartGoalKickState()
+    {
+        IsGameStop = true;
+    }
+
+
+    public void EndGoalKickState()
+    {
+        IsGameStop = false;
+    }
     public void ChangePlayer(PlayerController player)
     {
-        Debug.Log("★★★★ ChangePlayer呼び出し : " + player.name);
-
+        if (CurrentPlayer == player)
+        {
+            return;
+        }
         Debug.Log(
-       "ChangePlayer対象 : " + player.name
-   );
+    "ChangePlayer 前 : " +
+    (CurrentPlayer == null ? "null" : CurrentPlayer.name) +
+    " → 新 : " + player.name
+);
 
-        Debug.Log(
-            "Data : " +
-            (player.GetPlayer() == null
-            ? "NULL"
-            : player.GetPlayer().playerName)
-        );
         if (CurrentPlayer != null)
         {
             CurrentPlayer.IsControlled = false;
