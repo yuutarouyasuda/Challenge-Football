@@ -91,8 +91,10 @@ public class TeammateAI_New : MonoBehaviour
     }
     private void Update()
     {
-        supportTimer-=Time.deltaTime;
-
+        if (supportTimer > 0f)
+        {
+            supportTimer -= Time.deltaTime;
+        }
         if (GameManager.Instance.IsGameStop)
         {
             agent.isStopped = true;
@@ -260,6 +262,20 @@ public class TeammateAI_New : MonoBehaviour
         {
             score += nearestEnemy * 20f;
         }
+        int nearbyEnemyCount = 0;
+
+        foreach (EnemyAI enemy in enemies)
+        {
+            if (enemy == null)
+                continue;
+
+            if (Vector3.Distance(point, enemy.transform.position) < 3f)
+            {
+                nearbyEnemyCount++;
+            }
+        }
+
+        score -= nearbyEnemyCount * 120f;
         //-------------------------------------------------
         // ⑤ 味方と近すぎる場所は減点
         //-------------------------------------------------
@@ -319,7 +335,18 @@ public class TeammateAI_New : MonoBehaviour
             Vector3.Dot(toPoint, goalDir);
 
         score += attackAngle * 60f;
+        if (goalDistance < 15f &&
+    nearestEnemy > 5f)
+        {
+            score += 200f;
+        }
+        //フィールドの端行きにくくする
+        //float fieldHalfWidth = 20f;
 
+        //if (Mathf.Abs(point.x) > fieldHalfWidth - 2f)
+        //{
+        //    score -= 100f;
+        //}
         //-------------------------------------------------
         // ⑧ 今いる位置から近いほど少し高評価
         // （フラフラ防止）
@@ -345,41 +372,46 @@ public class TeammateAI_New : MonoBehaviour
         Vector3 bestPoint = transform.position;
         float bestScore = float.MinValue;
 
-        float radius = 8f;
+        float Maxradius =
+            Mathf.Lerp(
+                6f,
+                10f,
+                playerData.speed / 100f);
+     // 半径6m・8m・10mを調べる
+for (float radius = 6f; radius <= 10f; radius += 2f)
+{
+    for (int i = 0; i < 16; i++)
+    {
+        float angle = i * 22.5f;
 
-        // 16方向調べる
-        for (int i = 0; i < 16; i++)
+        Vector3 dir =
+            Quaternion.Euler(0, angle, 0) *
+            owner.transform.forward;
+
+        Vector3 candidate =
+            owner.transform.position +
+            dir * radius;
+
+        NavMeshHit hit;
+
+        if (!NavMesh.SamplePosition(
+            candidate,
+            out hit,
+            2f,
+            NavMesh.AllAreas))
         {
-            float angle = i * 22.5f;
-
-            Vector3 dir =
-                Quaternion.Euler(0, angle, 0) *
-                owner.transform.forward;
-
-            Vector3 candidate =
-                owner.transform.position +
-                dir * radius;
-
-            NavMeshHit hit;
-
-            if (!NavMesh.SamplePosition(
-                candidate,
-                out hit,
-                2f,
-                NavMesh.AllAreas))
-            {
-                continue;
-            }
-
-            float score =
-                EvaluatePosition(hit.position);
-
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestPoint = hit.position;
-            }
+            continue;
         }
+
+        float score = EvaluatePosition(hit.position);
+
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestPoint = hit.position;
+        }
+    }
+}
 
         if (supportTimer <= 0f)
         {
