@@ -255,7 +255,7 @@ public class BallController : MonoBehaviour
             FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
         PlayerController nearest = null;
-        float best = autoSwitchRange;
+        float best = float.MaxValue;
         foreach (PlayerController player in players)
         {
             if (player.GetComponent<TeammateAI_New>() == null)
@@ -276,22 +276,29 @@ public class BallController : MonoBehaviour
 
         Debug.Log("Nearest : " + nearest.name);
 
-        if (nearest != null &&
-            GameManager.Instance.CurrentPlayer != nearest)
-        {
-            Debug.Log("êÿÇËë÷Ç¶é¿çs");
-            GameManager.Instance.ChangePlayer(nearest);
-        }
         if (nearest != null)
         {
             Debug.Log("Nearest : " + nearest.name);
+
+            if (GameManager.Instance.CurrentPlayer != nearest)
+            {
+                Debug.Log("êÿÇËë÷Ç¶é¿çs");
+                GameManager.Instance.ChangePlayer(nearest);
+
+                PlayerSwitchManager switchManager =
+    FindAnyObjectByType<PlayerSwitchManager>();
+
+                if (switchManager != null)
+                {
+                    switchManager.SetCurrentPlayer(nearest);
+                }
+            }
         }
         else
         {
             Debug.Log("NearestÇ»Çµ");
         }
 
-      
     }
 
 }

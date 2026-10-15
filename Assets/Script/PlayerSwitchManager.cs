@@ -158,4 +158,20 @@ public class PlayerSwitchManager : MonoBehaviour
 
         return nearestIndex;
     }
+    public void SetCurrentPlayer(PlayerController player)
+    {
+        for (int i = 0; i < fieldPlayers.Length; i++)
+        {
+            if (fieldPlayers[i] == player)
+            {
+                currentIndex = i;
+
+                cursor.transform.position =
+                    fieldPlayers[currentIndex].transform.position +
+                    Vector3.up * cursorHeight;
+
+                return;
+            }
+        }
+    }
 }
