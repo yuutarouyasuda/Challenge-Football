@@ -38,8 +38,11 @@ public class GoalKickManager : MonoBehaviour
     }
     private void SetHomeGoalKickPosition()
     {
-        homeGoalKeeper.transform.position =
-            homeGoalKickPoint.position;
+        Rigidbody rb = homeGoalKeeper.GetComponent<Rigidbody>();
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.position = homeGoalKickPoint.position;
 
         defender.transform.position =
             dfGoalKickPosition.position;
@@ -54,17 +57,22 @@ public class GoalKickManager : MonoBehaviour
 
     private void SetAwayGoalKickPosition()
     {
-        awayGoalKeeper.GetComponent<NavMeshAgent>()
-            .Warp(awayGoalKickPoint.position);
+        Debug.Log("敵側配置実行");
 
-        awayDefender.GetComponent<NavMeshAgent>()
-            .Warp(awayDfGoalKickPosition.position);
+        awayDefender.transform.position =
+            awayDfGoalKickPosition.position;
 
-        awayMidfielder.GetComponent<NavMeshAgent>()
-            .Warp(awayMfGoalKickPosition.position);
+        awayMidfielder.transform.position =
+            awayMfGoalKickPosition.position;
 
-        awayForward.GetComponent<NavMeshAgent>()
-            .Warp(awayFwGoalKickPosition.position);
+        awayForward.transform.position =
+            awayFwGoalKickPosition.position;
+
+        Rigidbody rb = awayGoalKeeper.GetComponent<Rigidbody>();
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.position = awayGoalKickPoint.position;
     }
     public void StartGoalKick(bool isHomeSide)
     {
@@ -82,7 +90,8 @@ public class GoalKickManager : MonoBehaviour
         // ボールを持つGKだけ決める
         if (isHomeSide)
         {
-            ball.ResetBall(homeGoalKickPoint.position);
+            Debug.Log("GK forward : " + homeGoalKeeper.transform.forward);
+            // ball.ResetBall(homeGoalKickPoint.position);
             ball.SetOwner(homeGoalKeeper);
         }
         else

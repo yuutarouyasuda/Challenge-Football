@@ -52,7 +52,7 @@ public class BallController : MonoBehaviour
         {
             target =
                 owner.transform.position +
-                owner.transform.forward * 0.8f +
+                owner.transform.forward * 2f +
                 Vector3.up * 0.2f;
         }
 
