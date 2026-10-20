@@ -336,6 +336,10 @@ public class EnemyAI : MonoBehaviour
                     break;
             }
         }
+        /*Debug.Log(
+    name +
+    " speed=" + agent.speed +
+    " velocity=" + agent.velocity.magnitude);*/
     }
     public void SetCurrentBall(BallController ball)
     {

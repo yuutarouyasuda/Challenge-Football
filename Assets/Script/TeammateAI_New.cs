@@ -67,8 +67,12 @@ public class TeammateAI_New : MonoBehaviour
         get
         {
             if (playerData == null)
-                return agent.speed;
-            return playerData.speed * 0.9f;
+                return 4f;
+
+            return Mathf.Lerp(
+                3f,
+                6f,
+                playerData.speed / 100f);
         }
     }
     private float KickPower
@@ -102,6 +106,7 @@ public class TeammateAI_New : MonoBehaviour
         }
 
         agent.isStopped = false;
+
         agent.speed = MoveSpeed;
         if (tackleTimer > 0)
         {
@@ -184,6 +189,11 @@ public class TeammateAI_New : MonoBehaviour
                 CoverMove();
                 break;
         }
+       /* Debug.Log(
+    name +
+    " speed=" + agent.speed +
+    " velocity=" + agent.velocity.magnitude
+);*/
     }
 
     private float EvaluatePosition(Vector3 point)
@@ -489,8 +499,11 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
 
         if (owner == null)
             return;
+        Vector3 target =
+            owner.transform.position +
+            owner.transform.forward * 1.5f;
 
-        agent.SetDestination(owner.transform.position);
+        agent.SetDestination(target);
         float distance =
     Vector3.Distance(
         transform.position,

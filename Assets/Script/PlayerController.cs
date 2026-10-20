@@ -190,7 +190,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!IsControlled)
             return;
-        Debug.Log(moveInput);
 
         float speed = isDash ? DashSpeed : MoveSpeed*0.8f;
 
@@ -253,7 +252,6 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Player OnCollision");
 
         if (pickupTimer > 0)
             return;
@@ -263,12 +261,9 @@ public class PlayerController : MonoBehaviour
         if (ball == null)
             return;
 
-        Debug.Log("CanSteal=" + ball.CanSteal);
-        Debug.Log("Owner=" + (ball.Owner == null ? "null" : ball.Owner.name));
 
         if (ball.CanSteal && ball.Owner != this)
         {
-            Debug.Log("Player SetOwner");
             ball.SetOwner(this);
             currentBall = ball;
         }
@@ -296,12 +291,8 @@ public class PlayerController : MonoBehaviour
 
         transform.forward = dir;
 
-        currentBall.Kick(
-     dir,
-     power,
-     false,
-     passTarget
- );
+        currentBall.Kick(dir,power,false,passTarget);
+
         currentBall = null;
         passTarget = null;
         if(GameManager.Instance.IsKickOff)

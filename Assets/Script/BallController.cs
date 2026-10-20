@@ -34,8 +34,6 @@ public class BallController : MonoBehaviour
 
     public void SetOwner(MonoBehaviour owner)
     {
-        Debug.Log("setowner : " + owner.name);
-        Debug.Log(System.Environment.StackTrace); LastOwner = owner;
 
         PassTarget = null;
 
@@ -129,7 +127,6 @@ public class BallController : MonoBehaviour
     {
         if (Owner == null)
             return;
-        Debug.Log("Ball Follow : " + Owner.name);
         // Š—LÒ‚ğæ“¾
         PlayerController player = Owner as PlayerController;
         EnemyAI enemy = Owner as EnemyAI;

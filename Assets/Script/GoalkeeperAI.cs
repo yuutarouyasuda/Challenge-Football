@@ -56,8 +56,6 @@ public class GoalkeeperAI : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log($"hasBall={hasBall} isDiving={isDiving}");
-        Debug.Log("gk update");
         if (pickupTimer > 0f)
         {
             pickupTimer -= Time.deltaTime;
@@ -91,12 +89,16 @@ public class GoalkeeperAI : MonoBehaviour
     //------------------------------------------------
     private void MoveGoalkeeper()
     {
-        Debug.Log(agent.enabled);
         if (!agent.enabled)
             return;
 
         if (!agent.isOnNavMesh)
             return;
+
+        if(ball.PassTarget==this||ball.PassTarget==this)
+        {
+            agent.SetDestination(ball.transform.position);
+        }
 
         if (ShouldChaseBall())
         {

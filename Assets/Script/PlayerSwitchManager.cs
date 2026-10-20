@@ -32,12 +32,7 @@ public class PlayerSwitchManager : MonoBehaviour
                 ball.Owner != null ?
                 ball.Owner.GetComponent<PlayerController>() :
                 null;
-            Debug.Log(
-    "Owner : " +
-    (ball.Owner == null ? "null" : ball.Owner.name) +
-    " / Player : " +
-    (owner == null ? "null" : owner.name)
-);
+           
             if (owner != null && owner != previousOwner)
             {
                 previousOwner = owner;
