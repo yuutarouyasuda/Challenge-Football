@@ -311,7 +311,7 @@ public class PlayerController : MonoBehaviour
         GoalkeeperAI gk=GetComponent<GoalkeeperAI>();
         if(gk != null)
         {
-            gk.enabled = true;
+            gk.ReleaseBall();
         }
         pickupTimer = pickupCooldown;
     }
@@ -336,7 +336,7 @@ public class PlayerController : MonoBehaviour
         GoalkeeperAI gk = GetComponent<GoalkeeperAI>();
         if (gk != null)
         {
-            gk.enabled = true;
+            gk.ReleaseBall();
         }
         pickupTimer = pickupCooldown;
     }

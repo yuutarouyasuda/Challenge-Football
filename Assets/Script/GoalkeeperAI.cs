@@ -56,6 +56,8 @@ public class GoalkeeperAI : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log($"hasBall={hasBall} isDiving={isDiving}");
+        Debug.Log("gk update");
         if (pickupTimer > 0f)
         {
             pickupTimer -= Time.deltaTime;
@@ -89,15 +91,18 @@ public class GoalkeeperAI : MonoBehaviour
     //------------------------------------------------
     private void MoveGoalkeeper()
     {
-        if(ShouldChaseBall())
+        Debug.Log(agent.enabled);
+        if (!agent.enabled)
+            return;
+
+        if (!agent.isOnNavMesh)
+            return;
+
+        if (ShouldChaseBall())
         {
             agent.SetDestination(ball.transform.position);
             return;
         }
-        if (!agent.enabled)
-            return;
-        if(!agent.isOnNavMesh) 
-            return;
         Rigidbody rb = ball.GetComponent<Rigidbody>();
 
         Vector3 predict = ball.transform.position;
@@ -330,15 +335,41 @@ public class GoalkeeperAI : MonoBehaviour
     }
     private bool ShouldChaseBall()
     {
-        if (ball.Owner != null) return false;
+        // 誰か持っているなら出ない
+        if (ball.Owner != null)
+            return false;
 
-        if (ball.LastKicker is PlayerController) return true;
+        float distance =
+            Vector3.Distance(
+                transform.position,
+                ball.transform.position);
 
-        float distance =Vector3.Distance(transform.position,ball.transform.position);
+        // 遠いなら出ない
+        if (distance > rushDistance)
+            return false;
 
-        if (distance < rushDistance) return true;
+        Rigidbody rb = ball.GetComponent<Rigidbody>();
 
-        return false;
+        if (rb == null)
+            return false;
+
+        // ボールが止まりそうなら出ない
+        if (rb.linearVelocity.magnitude < 2f)
+            return false;
+
+        // GK方向へ飛んできているか
+        Vector3 toGoal =
+            (ownGoal.position - ball.transform.position).normalized;
+
+        float dot =
+            Vector3.Dot(
+                rb.linearVelocity.normalized,
+                toGoal);
+
+        if (dot < 0.6f)
+            return false;
+
+        return true;
     }
     private void PunchBall()
     {
@@ -367,36 +398,45 @@ public class GoalkeeperAI : MonoBehaviour
 
         pickupTimer = pickupCooldown;
     }
+    public void ReleaseBall()
+    {
+        hasBall = false;
+        pickupTimer= pickupCooldown;
+    }
     //------------------------------------------------
     // 味方へパス
     //------------------------------------------------
     private IEnumerator PassCoroutine()
     {
+        Debug.Log("PassCoroutine 開始");
 
         yield return new WaitForSeconds(1f);
 
+        Debug.Log("1秒経過");
+
         Transform target = FindBestPassTarget();
 
+        Debug.Log("target = " + (target == null ? "null" : target.name));
 
         if (target != null)
         {
+            Debug.Log("Kick実行");
+
             Vector3 dir = target.position - transform.position;
             dir.y = 0;
 
-            transform.forward = dir.normalized;
-
-
             ball.Kick(dir.normalized, passPower, false);
-
-            hasBall = false;
-
-            ReturnToGoal();
-
-            GoalKickManager.Instance.EndGoalKick();
-            pickupTimer = pickupCooldown;
         }
-        pickupTimer = pickupCooldown;
+
+        Debug.Log("hasBall=false");
+
         hasBall = false;
+        pickupTimer = pickupCooldown;
+
+        ReturnToGoal();
+
+        if (GoalKickManager.Instance != null)
+            GoalKickManager.Instance.EndGoalKick();
     }
 
     //------------------------------------------------
@@ -432,6 +472,6 @@ public class GoalkeeperAI : MonoBehaviour
     }
     public void ReturnToGoal()
     {
-        agent.SetDestination(transform.position);
+        agent.SetDestination(ownGoal.position);
     }
 }
