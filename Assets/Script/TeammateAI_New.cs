@@ -445,6 +445,11 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
 
         if (nearest == null)
             return;
+        float runDistance =
+            Mathf.Lerp(
+                4f,
+                8f,
+                playerData.speed / 100f);
 
         Vector3 goalDir =
             (opponentGoal.position -
@@ -452,10 +457,16 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
 
         Vector3 target =
             nearest.transform.position +
-            goalDir * 5f;
+            goalDir * runDistance;
+        Vector3 side =
+    Vector3.Cross(Vector3.up, goalDir);
 
+        target += side * Random.Range(-2f, 2f);
         NavMeshHit hit;
-
+        if (Vector3.Distance(target, nearest.transform.position) < 2f)
+        {
+            target += goalDir * 2f;
+        }
         if (NavMesh.SamplePosition(target,
                                    out hit,
                                    2f,
