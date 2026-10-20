@@ -766,6 +766,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TeamSetup
   player: {fileID: 488708329}
+  playerAI: {fileID: 488708337}
   teammates:
   - {fileID: 896785682}
   - {fileID: 823869377}
@@ -1324,8 +1325,8 @@ MonoBehaviour:
   - {fileID: 2106489954}
   teammates:
   - {fileID: 488708337}
-  - {fileID: 488708337}
-  - {fileID: 488708337}
+  - {fileID: 823869377}
+  - {fileID: 896785682}
   tackleRange: 1.5
   tackleAngle: 60
   tackleCooldown: 1
@@ -2434,8 +2435,8 @@ MonoBehaviour:
   - {fileID: 2106489954}
   teammates:
   - {fileID: 488708337}
-  - {fileID: 488708337}
-  - {fileID: 488708337}
+  - {fileID: 823869377}
+  - {fileID: 896785682}
   tackleRange: 1.5
   tackleAngle: 60
   tackleCooldown: 1
@@ -3151,8 +3152,8 @@ MonoBehaviour:
   - {fileID: 2106489954}
   teammates:
   - {fileID: 488708337}
-  - {fileID: 488708337}
-  - {fileID: 488708337}
+  - {fileID: 823869377}
+  - {fileID: 896785682}
   tackleRange: 1.5
   tackleAngle: 60
   tackleCooldown: 1

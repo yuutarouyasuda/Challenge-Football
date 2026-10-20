@@ -25,7 +25,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float tackleCooldown = 1f;
     [SerializeField] private float tackleAngle = 60f;
     [SerializeField] private float tackleDash = 2f;
+    [Header("KickOffMoveRadius")]
+    [SerializeField] private float kickOffMoveRadius = 3f;
 
+    private Vector3 kickOffCenter;
     private float tackleTimer;
     private Vector3 startPosition;
     private Quaternion startRotation;
@@ -196,6 +199,19 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = move * speed;
         velocity.y = rb.linearVelocity.y;
 
+        Vector3 nextPosition=rb.position+velocity*Time.deltaTime;
+
+        if (GameManager.Instance.IsKickOff)
+        {
+            Vector3 offset = nextPosition - kickOffCenter;
+            offset.y = 0f;
+
+            if(offset.magnitude>kickOffMoveRadius)
+            {
+                velocity.x = 0f;
+                velocity.y = 0f;
+            }
+        }
         rb.linearVelocity = velocity;
 
         if (move != Vector3.zero)
@@ -208,6 +224,10 @@ public class PlayerController : MonoBehaviour
                     targetRotation,
                     rotateSpeed * Time.fixedDeltaTime));
         }
+    }
+    public void SetKickOffArea(Vector3 center)
+    {
+        kickOffCenter = center;
     }
     private PlayerData playerData;
     private PlayerData PlayerData => playerData;

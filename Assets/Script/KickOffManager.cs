@@ -42,6 +42,8 @@ public class KickOffManager : MonoBehaviour
 
             if (pc != null)
             {
+                pc.SetKickOffArea(kickOffPlayerPoint.position);
+
                 GameManager.Instance.ChangePlayer(pc);
             }
         }

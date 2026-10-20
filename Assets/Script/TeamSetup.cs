@@ -3,6 +3,7 @@ using UnityEngine.AI;
 public class TeamSetup : MonoBehaviour
 {
     [SerializeField] private PlayerController player;
+    [SerializeField] private TeammateAI_New playerAI;
     [SerializeField] private TeammateAI_New[] teammates;
 
     [Header("position")]
@@ -18,6 +19,12 @@ public class TeamSetup : MonoBehaviour
             Debug.LogError("Manager‚ªnull");
             return;
         }
+
+        player.SetPlayerData(TeamDataManager.Instance.forward);
+        playerAI.SetPlayerData(TeamDataManager.Instance.forward);
+
+        teammates[0].SetPlayerData(TeamDataManager.Instance.midfielder);
+        teammates[1].SetPlayerData(TeamDataManager.Instance.defender);
 
         Debug.Log("Forward = " + TeamDataManager.Instance.forward);
         Debug.Log("Midfielder = " + TeamDataManager.Instance.midfielder);

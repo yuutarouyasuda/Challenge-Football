@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public PlayerController CurrentPlayer {  get; private set; }
     public bool IsKickOff {  get; private set; }
     public bool IsGameStop {  get; private set; }
+    public bool IsMatchRunning {  get; private set; }
     public static GameManager Instance;
 
     public static int ResultHomeScore;
@@ -50,6 +51,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsMatchRunning) return;
+
         if (currentTime > 0)
         {
             currentTime -= Time.deltaTime;
@@ -65,10 +68,12 @@ public class GameManager : MonoBehaviour
     public void StartKickOffState()
     {
         IsKickOff = true;
+        IsMatchRunning = false;
     }
     public void EndKickOffState()
     {
         IsKickOff = false;
+        IsMatchRunning = true;
         Debug.Log("キックオフ終了");
     }
     public void StartGoalKickState()
@@ -149,6 +154,7 @@ public class GameManager : MonoBehaviour
         UpdateScoreUI();
 
         IsGameStop = true;
+        StartKickOffState();
 
         // 試合停止
         IsKickOff = true;

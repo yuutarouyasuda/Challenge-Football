@@ -372,6 +372,8 @@ public class TeammateAI_New : MonoBehaviour
         Vector3 bestPoint = transform.position;
         float bestScore = float.MinValue;
 
+
+        Debug.Log(playerData);
         float Maxradius =
             Mathf.Lerp(
                 6f,
