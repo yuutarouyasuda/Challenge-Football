@@ -573,12 +573,18 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
         if (ball.Owner != null)
             return;
 
+        if (!ball.CanSteal) return;
+
         ball.SetOwner(player);
 
         isReceiver = false;
     }
     private void ChaseLooseBall(BallController ball)
     {
+        if (ball.IsPassing) return;
+
+        if (!ball.CanSteal) return;
+
         // ©•ª‚ªˆê”Ô‹ß‚¢‚©”»’è
         float myDistance =
             Vector3.Distance(transform.position, ball.transform.position);

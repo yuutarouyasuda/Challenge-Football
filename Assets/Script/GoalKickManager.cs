@@ -91,7 +91,7 @@ public class GoalKickManager : MonoBehaviour
         if (isHomeSide)
         {
             Debug.Log("GK forward : " + homeGoalKeeper.transform.forward);
-            // ball.ResetBall(homeGoalKickPoint.position);
+            ball.ResetBall(homeGoalKickPoint.position);
             ball.SetOwner(homeGoalKeeper);
         }
         else

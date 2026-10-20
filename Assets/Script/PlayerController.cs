@@ -253,22 +253,22 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("Player OnCollision");
 
         if (pickupTimer > 0)
-        {
             return;
-        }
 
         BallController ball = collision.gameObject.GetComponent<BallController>();
 
         if (ball == null)
-        {
             return;
-        }
 
+        Debug.Log("CanSteal=" + ball.CanSteal);
+        Debug.Log("Owner=" + (ball.Owner == null ? "null" : ball.Owner.name));
 
         if (ball.CanSteal && ball.Owner != this)
         {
+            Debug.Log("Player SetOwner");
             ball.SetOwner(this);
             currentBall = ball;
         }
@@ -429,7 +429,7 @@ public class PlayerController : MonoBehaviour
         currentBall = ball;
     }
 
-    public void SetControl(bool value)
+    /*public void SetControl(bool value)
     {
         Debug.Log(name + " SetControl : " + value);
 
@@ -445,7 +445,7 @@ public class PlayerController : MonoBehaviour
 
         if (agent != null)
             agent.enabled = !value;
-    }
+    }*/
     public float Defence
     {
         get
@@ -486,9 +486,7 @@ public class PlayerController : MonoBehaviour
     }
     private void TryStealBall()
     {
-        Collider[] hits = Physics.OverlapSphere(
-     transform.position,
-     TackleRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position,TackleRange);
 
         foreach (Collider hit in hits)
         {
@@ -499,6 +497,7 @@ public class PlayerController : MonoBehaviour
 
             if (ball.Owner == null)
             {
+                Debug.Log("TryStealBall SetOwner");
                 ball.SetOwner(this);
                 currentBall = ball;
                 return;

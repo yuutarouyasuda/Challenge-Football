@@ -1161,6 +1161,7 @@ MonoBehaviour:
   tackleCooldown: 1
   tackleAngle: 60
   tackleDash: 2
+  kickOffMoveRadius: 3
   IsControlled: 0
 --- !u!54 &488708330
 Rigidbody:
@@ -1625,7 +1626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &583874510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1998,7 +1999,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &748156153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2387,6 +2388,7 @@ MonoBehaviour:
   tackleCooldown: 1
   tackleAngle: 60
   tackleDash: 2
+  kickOffMoveRadius: 3
   IsControlled: 0
 --- !u!54 &823869376
 Rigidbody:
@@ -2513,7 +2515,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &835284838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2726,6 +2728,7 @@ MonoBehaviour:
   tackleCooldown: 1
   tackleAngle: 60
   tackleDash: 2
+  kickOffMoveRadius: 3
   IsControlled: 0
 --- !u!1 &885811237
 GameObject:
@@ -3104,6 +3107,7 @@ MonoBehaviour:
   tackleCooldown: 1
   tackleAngle: 60
   tackleDash: 2
+  kickOffMoveRadius: 3
   IsControlled: 0
 --- !u!54 &896785681
 Rigidbody:
@@ -3378,6 +3382,7 @@ MonoBehaviour:
   tackleCooldown: 1
   tackleAngle: 60
   tackleDash: 2
+  kickOffMoveRadius: 3
   IsControlled: 0
 --- !u!54 &996609812
 Rigidbody:
@@ -5002,7 +5007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2106489954
 MonoBehaviour:
   m_ObjectHideFlags: 0

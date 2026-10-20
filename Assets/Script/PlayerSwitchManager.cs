@@ -92,12 +92,7 @@ public class PlayerSwitchManager : MonoBehaviour
     }
     private void SetControlPlayer(int index)
     {
-        for (int i = 0; i < fieldPlayers.Length; i++)
-        {
-            fieldPlayers[i].SetControl(false);
-        }
-
-        fieldPlayers[index].SetControl(true);
+        GameManager.Instance.ChangePlayer(fieldPlayers[index]);
 
         currentIndex = index;
         currentCursorPlayer = fieldPlayers[index];
@@ -157,13 +152,7 @@ public class PlayerSwitchManager : MonoBehaviour
     }
     private void SetGoalkeeperControl()
     {
-        // ‘Sˆõ‘€ì‰ðœ
-        for (int i = 0; i < fieldPlayers.Length; i++)
-        {
-            fieldPlayers[i].SetControl(false);
-        }
-
-        goalkeeper.SetControl(true);
+        GameManager.Instance.ChangePlayer(goalkeeper);
 
         currentCursorPlayer = goalkeeper;
 

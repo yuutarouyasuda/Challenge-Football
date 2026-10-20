@@ -13,6 +13,8 @@ public class BallController : MonoBehaviour
     [SerializeField] private float holdDistance = 1.2f;
     [SerializeField] private float holdHeight = 0.05f;
     [SerializeField] private float autoSwitchRange = 4f;
+    [SerializeField] private float autSwitchInterval = 0.2f;
+    private float autoSwitchTimer;
     public MonoBehaviour PassTarget { get; private set; }
     private float stealTimer;
     private Rigidbody rb;
@@ -32,7 +34,8 @@ public class BallController : MonoBehaviour
 
     public void SetOwner(MonoBehaviour owner)
     {
-        LastOwner = owner;
+        Debug.Log("setowner : " + owner.name);
+        Debug.Log(System.Environment.StackTrace); LastOwner = owner;
 
         PassTarget = null;
 
@@ -81,6 +84,7 @@ public class BallController : MonoBehaviour
 
     public void ClearOwner()
     {
+        Debug.Log("ClearOwner");
         Owner = null;
     }
     private void Update()
@@ -91,7 +95,13 @@ public class BallController : MonoBehaviour
         }
         if (Owner == null)
         {
-            AutoSwitchPlayer();
+            autoSwitchTimer-=Time.deltaTime;
+
+            if(autoSwitchTimer<=0)
+            {
+                autoSwitchTimer = autSwitchInterval;
+                AutoSwitchPlayer();
+            }
         }
         // ƒpƒX‘ÎÛ‚Ö‚ÌŽ©“®Ø‚è‘Ö‚¦
         if (PassTarget != null && Owner == null)
@@ -119,7 +129,7 @@ public class BallController : MonoBehaviour
     {
         if (Owner == null)
             return;
-
+        Debug.Log("Ball Follow : " + Owner.name);
         // Š—LŽÒ‚ðŽæ“¾
         PlayerController player = Owner as PlayerController;
         EnemyAI enemy = Owner as EnemyAI;
@@ -209,11 +219,7 @@ public class BallController : MonoBehaviour
 
         Owner = null;
     }
-    public void Kick(
-    Vector3 direction,
-    float power,
-    bool isLob,
-    MonoBehaviour target = null)
+    public void Kick(Vector3 direction,float power,bool isLob,MonoBehaviour target = null)
     {
         if (GoalKickManager.Instance != null && GoalKickManager.Instance.IsGoalKick)
         {
@@ -222,9 +228,10 @@ public class BallController : MonoBehaviour
         LastKicker = Owner;
 
         PassTarget = target;
-
+        Debug.Log("Kick");
         ClearOwner();
-
+        Debug.Log("kickŒã Owner=" + Owner);
+        stealTimer = stealCooldown;
         IsPassing = true;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;

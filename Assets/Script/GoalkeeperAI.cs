@@ -76,10 +76,12 @@ public class GoalkeeperAI : MonoBehaviour
 
             return;   // ダイビング中は通常移動しない
         }
+        TryCatchBall();
 
+        if (hasBall) return;
+        
         MoveGoalkeeper();
         TryDiveSave();
-        TryCatchBall();
     }
 
     //------------------------------------------------
@@ -87,6 +89,11 @@ public class GoalkeeperAI : MonoBehaviour
     //------------------------------------------------
     private void MoveGoalkeeper()
     {
+        if(ShouldChaseBall())
+        {
+            agent.SetDestination(ball.transform.position);
+            return;
+        }
         if (!agent.enabled)
             return;
         if(!agent.isOnNavMesh) 
@@ -320,6 +327,18 @@ public class GoalkeeperAI : MonoBehaviour
             StartCoroutine(PassCoroutine());
         }
 
+    }
+    private bool ShouldChaseBall()
+    {
+        if (ball.Owner != null) return false;
+
+        if (ball.LastKicker is PlayerController) return true;
+
+        float distance =Vector3.Distance(transform.position,ball.transform.position);
+
+        if (distance < rushDistance) return true;
+
+        return false;
     }
     private void PunchBall()
     {
