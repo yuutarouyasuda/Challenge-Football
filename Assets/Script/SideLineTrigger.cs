@@ -8,7 +8,9 @@ public class SideLineTrigger : MonoBehaviour
         if (!other.CompareTag("Ball"))
             return;
 
-        Debug.Log("サイドラインを出ました");
+        if (GameManager.Instance.IskickIn) return;
+
+        Debug.Log($"サイドラインを出ました frame={Time.frameCount}");
 
         KickInManager.Instance.StartKickIn();
     }

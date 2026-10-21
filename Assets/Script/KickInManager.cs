@@ -16,14 +16,20 @@ public class KickInManager : MonoBehaviour
 
     public void StartKickIn()
     {
+        if (GameManager.Instance.IskickIn) return;
+
         Debug.Log("キックイン開始");
+
+        GameManager.Instance.StartKickIn();
+
+        Rigidbody rb = ball.GetComponent < Rigidbody >();
+        rb.linearVelocity=Vector3.zero;
+        rb.angularVelocity=Vector3.zero;
 
         StartCoroutine(KickInDelay());
     }
     private IEnumerator KickInDelay()
     {
-        Debug.Log("キックイン開始");
-
         // 少し待つ
         yield return new WaitForSeconds(2f);
 
@@ -144,6 +150,7 @@ public class KickInManager : MonoBehaviour
         // ボール保持
         ball.SetOwner(player);
 
+        GameManager.Instance.EndKickIn();
 
         Debug.Log(player.name + " が再開");
     }

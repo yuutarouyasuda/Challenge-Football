@@ -265,6 +265,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+        if (GameManager.Instance.IskickIn) return;
 
         if (pickupTimer > 0)
             return;

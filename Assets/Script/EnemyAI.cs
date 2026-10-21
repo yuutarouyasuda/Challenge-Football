@@ -84,6 +84,11 @@ public class EnemyAI : MonoBehaviour
     }
     private void Update()
     {
+        if (GameManager.Instance.IskickIn)
+        {
+            agent.ResetPath();
+            return;
+        }
         if (GameManager.Instance.IsGameStop)
         {
             agent.isStopped = true;

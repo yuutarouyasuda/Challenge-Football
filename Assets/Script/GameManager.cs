@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public bool IsKickOff {  get; private set; }
     public bool IsGameStop {  get; private set; }
     public bool IsMatchRunning {  get; private set; }
+
+    public bool IskickIn { get; private set;}
+
     public static GameManager Instance;
 
     public static int ResultHomeScore;
@@ -85,6 +88,14 @@ public class GameManager : MonoBehaviour
     public void EndGoalKickState()
     {
         IsGameStop = false;
+    }
+    public void StartKickIn()
+    {
+        IskickIn = true;
+    }
+    public void EndKickIn()
+    {
+        IskickIn = false;
     }
     public void ChangePlayer(PlayerController player)
     {
