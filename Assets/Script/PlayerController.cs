@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     public bool IsControlled = false;
     private TeammateAI_New teammateAI;
     private NavMeshAgent agent;
+    private Vector3 lastPosition;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -145,6 +146,7 @@ public class PlayerController : MonoBehaviour
     {
         startPosition = transform.position;
         startRotation = transform.rotation;
+        lastPosition = transform.position;
     }
     private void Update()
     {
@@ -223,6 +225,17 @@ public class PlayerController : MonoBehaviour
                     targetRotation,
                     rotateSpeed * Time.fixedDeltaTime));
         }
+
+        // É{Å[Éãï€éùíÜÇæÇØãóó£Çë™ÇÈ
+        if (currentBall != null && currentBall.Owner == this)
+        {
+            float distance =
+                Vector3.Distance(transform.position, lastPosition);
+
+            ChallengeManager.Instance.AddDribbleDistance(distance,true);
+        }
+
+        lastPosition = transform.position;
     }
     public void SetKickOffArea(Vector3 center)
     {
@@ -293,6 +306,8 @@ public class PlayerController : MonoBehaviour
 
         currentBall.Kick(dir,power,false,passTarget);
 
+        ChallengeManager.Instance.OnPassKick(true);
+
         currentBall = null;
         passTarget = null;
         if(GameManager.Instance.IsKickOff)
@@ -313,12 +328,10 @@ public class PlayerController : MonoBehaviour
 
         dir.y = 0.5f;
 
-        currentBall.Kick(
-    dir,
-    power,
-    true,
-    passTarget
-);
+        currentBall.Kick(dir,power,true,passTarget);
+
+        ChallengeManager.Instance.OnPassKick(true);
+
         currentBall = null;
         if (GameManager.Instance.IsKickOff)
         {

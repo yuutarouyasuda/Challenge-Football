@@ -58,10 +58,12 @@ public class EnemyAI : MonoBehaviour
     private float afterKickMoveTimer = 0f;
     private Vector3 startPosition;
     private Rigidbody rb;
+    private Vector3 lastPosition;
 
     private void Start()
     {
         startPosition = transform.position;
+        lastPosition = transform.position;
     }
     public void ResetPosition()
     {
@@ -336,6 +338,15 @@ public class EnemyAI : MonoBehaviour
                     break;
             }
         }
+        if (currentBall != null && currentBall.Owner == this)
+        {
+            float distance =
+                Vector3.Distance(transform.position, lastPosition);
+
+            ChallengeManager.Instance.AddDribbleDistance(distance, false);
+        }
+
+        lastPosition = transform.position;
         /*Debug.Log(
     name +
     " speed=" + agent.speed +
@@ -663,7 +674,9 @@ public void SetKickOffPlayer()
             dir.normalized,
             enemyManager.passPower,
             false);
-        
+
+        ChallengeManager.Instance.OnPassKick(false);
+
         currentBall = null;
 
         noPickupTimer = 0.5f;

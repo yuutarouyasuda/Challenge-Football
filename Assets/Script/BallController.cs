@@ -37,9 +37,26 @@ public class BallController : MonoBehaviour
 
         PassTarget = null;
 
-        Owner = owner;
+        bool wasHome = Owner is PlayerController || Owner is TeammateAI_New;
 
-        LastKicker = owner;
+        bool nowHome=owner is PlayerController || owner is TeammateAI_New;
+
+        if (Owner!=null&&wasHome!=nowHome)
+        {
+            ChallengeManager.Instance.ResetProgress(wasHome);
+        }
+        Owner = owner;
+        if (IsPassing)
+        {
+            if (owner is PlayerController || owner is TeammateAI_New)
+            {
+                ChallengeManager.Instance.OnPassReceive(true);
+            }
+            else if (owner is EnemyAI)
+            {
+                ChallengeManager.Instance.OnPassReceive(false);
+            }
+        }
         stealTimer = stealCooldown;
         IsPassing = false;
 

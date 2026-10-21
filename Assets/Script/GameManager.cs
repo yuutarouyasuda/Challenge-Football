@@ -141,12 +141,12 @@ public class GameManager : MonoBehaviour
 
         if (homeGoal)
         {
-            awayScore++;
+            awayScore += ChallengeManager.Instance.GetGoalPoint(true);
             nextKickOffPlayer = kickOffManager.GetHomeKickOffPlayer();
         }
         else
         {
-            homeScore++;
+            homeScore += ChallengeManager.Instance.GetGoalPoint(false);
             nextKickOffPlayer = kickOffManager.GetAwayKickOffPlayer();
         }
 

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   playerName: 1
   speed: 100
-  kick: 50
-  dribble: 50
+  kick: 100
+  dribble: 100
   defence: 50
