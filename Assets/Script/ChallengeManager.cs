@@ -158,6 +158,7 @@ public class ChallengeManager : MonoBehaviour
 
     public void AddDribbleDistance(float distance, bool isHome)
     {
+        if (GameManager.Instance.IsKickOff) return;
         if (isHome)
         {
             if (homeDribbled)
@@ -189,6 +190,8 @@ public class ChallengeManager : MonoBehaviour
 
     public void OnPassKick(bool isHome)
     {
+        if(GameManager.Instance.IsKickOff) return;
+
         if (isHome)
             homePassStarted = true;
         else
@@ -196,6 +199,8 @@ public class ChallengeManager : MonoBehaviour
     }
     public void OnPassReceive(bool isHome)
     {
+        if(GameManager.Instance.IsKickOff) return;
+
         if (isHome)
         {
             if (!homePassStarted)
