@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 7
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   playerName: 7
-  speed: 50
-  kick: 50
-  dribble: 50
-  defence: 50
+  speed: 60
+  kick: 55
+  dribble: 45
+  defence: 90

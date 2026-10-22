@@ -63,9 +63,12 @@ public class KickInManager : MonoBehaviour
 
         T nearest = null;
         float minDistance = Mathf.Infinity;
-
         foreach (T obj in list)
         {
+            // キーパーはキックイン選手にしない
+            if (obj.GetComponent<GoalkeeperAI>() != null)
+                continue;
+
             float distance = Vector3.Distance(
                 ball.transform.position,
                 obj.transform.position);

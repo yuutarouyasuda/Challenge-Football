@@ -286,6 +286,29 @@ public class BallController : MonoBehaviour
             SetOwner(player);
         }
     }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (Owner != null)
+            return;
+
+        if (stealTimer > 0f)
+            return;
+
+        EnemyAI enemy = collision.collider.GetComponentInParent<EnemyAI>();
+
+        if (enemy != null && enemy != LastKicker)
+        {
+            SetOwner(enemy);
+            return;
+        }
+
+        PlayerController player = collision.collider.GetComponentInParent<PlayerController>();
+
+        if (player != null && player != LastKicker)
+        {
+            SetOwner(player);
+        }
+    }
     private void AutoSwitchPlayer()
     {
         Debug.Log("AutoSwitch");

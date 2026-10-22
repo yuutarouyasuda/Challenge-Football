@@ -79,7 +79,7 @@ public class GoalkeeperAI : MonoBehaviour
         TryCatchBall();
 
         if (hasBall) return;
-        
+
         MoveGoalkeeper();
         TryDiveSave();
     }
@@ -95,9 +95,10 @@ public class GoalkeeperAI : MonoBehaviour
         if (!agent.isOnNavMesh)
             return;
 
-        if(ball.PassTarget==this||ball.PassTarget==this)
+        if (ball.PassTarget == this)
         {
             agent.SetDestination(ball.transform.position);
+            return;
         }
 
         if (ShouldChaseBall())
@@ -194,6 +195,7 @@ public class GoalkeeperAI : MonoBehaviour
     }
     private void TryDiveSave()
     {
+        Debug.Log("TryDive");
         if (isDiving)
         {
             return;
@@ -252,15 +254,21 @@ public class GoalkeeperAI : MonoBehaviour
 
         float diff = predictZ - transform.position.z;
 
-
         if (Mathf.Abs(diff) < 0.5f)
         {
             return;
         }
 
+        Vector3 diveDir;
 
-        Vector3 diveDir =
-            diff > 0 ? transform.right : -transform.right;
+        if (predictZ > transform.position.z)
+        {
+            diveDir = (transform.forward + Vector3.forward).normalized;
+        }
+        else
+        {
+            diveDir = (transform.forward + Vector3.back).normalized;
+        }
 
         StartCoroutine(DiveCoroutine(diveDir));
     }
@@ -272,12 +280,10 @@ public class GoalkeeperAI : MonoBehaviour
 
         Rigidbody body = GetComponent<Rigidbody>();
 
-        body.linearVelocity =
-            dir.normalized * diveSpeed;
+        body.linearVelocity = Vector3.zero;
+        body.AddForce(dir.normalized * diveSpeed, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(0.35f);
-
-        body.linearVelocity = Vector3.zero;
 
         agent.enabled = true;
 
@@ -403,7 +409,7 @@ public class GoalkeeperAI : MonoBehaviour
     public void ReleaseBall()
     {
         hasBall = false;
-        pickupTimer= pickupCooldown;
+        pickupTimer = pickupCooldown;
     }
     //------------------------------------------------
     // –¡•û‚ÖƒpƒX
