@@ -29,6 +29,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private Transform ball;
     [SerializeField] private Transform opponentGoal;
     [SerializeField] private Transform ownGoal;
+    [SerializeField] private PlayerData playerData;
     [SerializeField] private bool canShoot = false;
     [SerializeField] private EnemyAI[] teammates;
     [SerializeField] private float kickOffPassPower = 20f;
@@ -41,9 +42,7 @@ public class EnemyAI : MonoBehaviour
 
     private float tackleTimer;
 
-    [SerializeField, Range(1, 100)]
-    private int dribble = 50;
-    public float Dribble => dribble;
+    public float Dribble => playerData.dribble;
     private EnemyManager enemyManager;
     private float passTimer = 0f;
     private BallController currentBall;
@@ -110,7 +109,7 @@ public class EnemyAI : MonoBehaviour
         }
         PlayerController[] players =
     FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-        agent.speed = enemyManager.moveSpeed;
+        agent.speed = playerData.speed;
         if (escapePassBonusTimer > 0f)
         {
             escapePassBonusTimer -= Time.deltaTime;
@@ -261,10 +260,10 @@ public class EnemyAI : MonoBehaviour
                     transform.forward = shootDir.normalized;
 
                     currentBall.Kick(
-                        shootDir.normalized,
-                        enemyManager.shootPower,
-                        false);
-                  
+    shootDir.normalized,
+    playerData.kick,
+    false);
+
                     currentBall = null;
                     noPickupTimer = 0.5f;
                     afterKickMoveTimer = 0.5f;
@@ -380,8 +379,8 @@ public class EnemyAI : MonoBehaviour
 
         currentBall.Kick(
             dir.normalized,
-            enemyManager.passPower,
-            false);
+playerData.kick,
+false);
 
         currentBall = null;
 
@@ -706,9 +705,9 @@ public void SetKickOffPlayer()
         }
 
         currentBall.Kick(
-            dir.normalized,
-            enemyManager.passPower,
-            false);
+    dir.normalized,
+    playerData.kick,
+    false);
 
         ChallengeManager.Instance.OnPassKick(false);
 

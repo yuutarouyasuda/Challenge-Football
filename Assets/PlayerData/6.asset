@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382156996f14d114a84efdbd251fdb34, type: 3}
   m_Name: 6
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  playerName: 6
+  playerName: Anchor
   speed: 68
   kick: 65
   dribble: 60

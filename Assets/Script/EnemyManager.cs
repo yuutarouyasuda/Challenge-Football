@@ -9,13 +9,10 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] public Transform ball;
 
     [Header("Attack")]
-    public float shootPower = 20f;
     public float shootDistance = 8f;
-    public float passPower = 12f;
     public float passCooldown = 1f;
 
     [Header("Movement")]
-    public float moveSpeed = 5f;
     public float dashSpeed = 8f;
 
     [Header("RotateSpeed")]
