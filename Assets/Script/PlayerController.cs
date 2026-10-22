@@ -47,6 +47,8 @@ public class PlayerController : MonoBehaviour
     private TeammateAI_New teammateAI;
     private NavMeshAgent agent;
     private Vector3 lastPosition;
+    private bool isKickInPlayer;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -237,6 +239,48 @@ public class PlayerController : MonoBehaviour
 
         lastPosition = transform.position;
     }
+    public void StartKickInPlayer()
+    {
+        isKickInPlayer = true;
+
+        currentBall = FindFirstObjectByType<BallController>();
+    }
+    public void KickInPass()
+    {
+        TeammateAI_New[] mates =
+            FindObjectsByType<TeammateAI_New>(FindObjectsSortMode.None);
+
+        TeammateAI_New receiver = null;
+        float best = Mathf.Infinity;
+
+        foreach (var mate in mates)
+        {
+            float d = Vector3.Distance(
+                transform.position,
+                mate.transform.position);
+
+            if (d < best)
+            {
+                best = d;
+                receiver = mate;
+            }
+        }
+
+        if (receiver == null)
+            return;
+
+        Vector3 dir =
+            receiver.transform.position -
+            transform.position;
+
+        dir.y = 0;
+
+        GroundPass(dir.normalized, KickPower);
+
+        isKickInPlayer = false;
+
+        EnableInput();
+    }
     public void SetKickOffArea(Vector3 center)
     {
         kickOffCenter = center;
@@ -319,6 +363,11 @@ public class PlayerController : MonoBehaviour
         if(gk != null)
         {
             gk.ReleaseBall();
+        }
+        if(isKickInPlayer)
+        {
+            isKickInPlayer = false;
+            GameManager.Instance.EndKickIn();
         }
         pickupTimer = pickupCooldown;
     }

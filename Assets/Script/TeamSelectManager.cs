@@ -18,9 +18,9 @@ public class TeamSelectManager : MonoBehaviour
     }
     private void UpdatePlayerText()
     {
-        player1Text.text = selectedPlayers.Count > 0 ? "1 : " + selectedPlayers[0].playerName : "1 ";
-        player2Text.text = selectedPlayers.Count > 1 ? "2 : " + selectedPlayers[1].playerName : "2 ";
-        player3Text.text = selectedPlayers.Count > 2 ? "3 : " + selectedPlayers[2].playerName : "3 ";
+        player1Text.text = selectedPlayers.Count > 0 ? "Select1 : " + selectedPlayers[0].playerName : "Select1 ";
+        player2Text.text = selectedPlayers.Count > 1 ? "Select2 : " + selectedPlayers[1].playerName : "Select2 ";
+        player3Text.text = selectedPlayers.Count > 2 ? "Select3 : " + selectedPlayers[2].playerName : "Select3 ";
     }
     public void SelectPlayer(PlayerData player)
     {

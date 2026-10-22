@@ -86,6 +86,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (GameManager.Instance.IskickIn)
         {
+            Debug.Log(name + "IsKickIn’†");
             agent.ResetPath();
             return;
         }
@@ -356,6 +357,33 @@ public class EnemyAI : MonoBehaviour
     name +
     " speed=" + agent.speed +
     " velocity=" + agent.velocity.magnitude);*/
+    }
+    private bool isKickInPlayer = false;
+
+    public void StartKickInPlayer()
+    {
+        isKickInPlayer = true;
+    }
+    public void KickInPass()
+    {
+        EnemyAI receiver = FindBestReceiver();
+
+        if (receiver == null)
+            return;
+
+        Vector3 dir =
+            receiver.transform.position - transform.position;
+
+        dir.y = 0;
+
+        currentBall.Kick(
+            dir.normalized,
+            enemyManager.passPower,
+            false);
+
+        currentBall = null;
+
+        GameManager.Instance.EndKickIn();
     }
     public void SetCurrentBall(BallController ball)
     {

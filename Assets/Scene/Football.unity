@@ -3623,19 +3623,19 @@ MonoBehaviour:
   - {fileID: 583874516}
   - {fileID: 748156159}
   - {fileID: 2106489960}
-  moveRange: 4
+  moveRange: 5
   catchDistance: 2
   rushDistance: 10
   passPower: 15
   pickupCooldown: 0.5
-  returnDistance: 30
-  farDistance: 25
-  middleDistance: 15
+  returnDistance: 20
+  farDistance: 20
+  middleDistance: 10
   nearDistance: 8
-  farForward: 2
-  middleForward: 4
-  nearForward: 6
-  veryNearForward: 8
+  farForward: 1
+  middleForward: 2
+  nearForward: 3
+  veryNearForward: 4
   diveSpeed: 12
   diveDistance: 3
   diveBallSpeed: 10
@@ -3788,9 +3788,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &835284845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4521,19 +4521,19 @@ MonoBehaviour:
   - {fileID: 488708334}
   - {fileID: 823869374}
   - {fileID: 823869374}
-  moveRange: 4
+  moveRange: 5
   catchDistance: 2
   rushDistance: 10
   passPower: 15
   pickupCooldown: 0.5
-  returnDistance: 30
-  farDistance: 25
-  middleDistance: 15
+  returnDistance: 20
+  farDistance: 20
+  middleDistance: 10
   nearDistance: 8
-  farForward: 2
-  middleForward: 4
-  nearForward: 6
-  veryNearForward: 8
+  farForward: 1
+  middleForward: 2
+  nearForward: 3
+  veryNearForward: 4
   diveSpeed: 12
   diveDistance: 3
   diveBallSpeed: 10
@@ -5310,7 +5310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   homeScore: 0
   awayScore: 0
-  matchTime: 300
+  matchTime: 60
   ballSpawnPoint: {fileID: 1807795085}
   homeScoreText: {fileID: 1098605103}
   awayScoreText: {fileID: 893488852}
@@ -5646,7 +5646,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KickInManager
   ball: {fileID: 579379398}
-  kickPower: 12
 --- !u!4 &1387773832
 Transform:
   m_ObjectHideFlags: 0

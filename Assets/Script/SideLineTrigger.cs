@@ -10,7 +10,7 @@ public class SideLineTrigger : MonoBehaviour
 
         if (GameManager.Instance.IskickIn) return;
 
-        Debug.Log($"サイドラインを出ました frame={Time.frameCount}");
+        Debug.Log("サイドラインを出ました ");
 
         KickInManager.Instance.StartKickIn();
     }
