@@ -2506,7 +2506,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 0
+  canShoot: 1
   teammates:
   - {fileID: 748156153}
   - {fileID: 2106489954}
@@ -2991,7 +2991,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 0
+  canShoot: 1
   teammates:
   - {fileID: 583874510}
   - {fileID: 2106489954}
@@ -5310,7 +5310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   homeScore: 0
   awayScore: 0
-  matchTime: 60
+  matchTime: 20
   ballSpawnPoint: {fileID: 1807795085}
   homeScoreText: {fileID: 1098605103}
   awayScoreText: {fileID: 893488852}
@@ -7023,7 +7023,7 @@ MonoBehaviour:
   ball: {fileID: 579379397}
   opponentGoal: {fileID: 1268239319}
   ownGoal: {fileID: 1944933098}
-  canShoot: 0
+  canShoot: 1
   teammates:
   - {fileID: 583874510}
   - {fileID: 748156153}

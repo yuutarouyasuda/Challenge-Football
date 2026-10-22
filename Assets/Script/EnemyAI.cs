@@ -219,6 +219,8 @@ public class EnemyAI : MonoBehaviour
             ActionType action = ActionType.Dribble;
             float bestScore = dribbleScore;
 
+            dribbleScore -= 20f;
+
             if (passScore > bestScore)
             {
                 bestScore = passScore;
@@ -481,7 +483,7 @@ public void SetKickOffPlayer()
             float goalDistance =
                 Vector3.Distance(mate.transform.position, opponentGoal.position);
 
-            score -= goalDistance;
+            score -= goalDistance*0.5f;
 
             //----------------------------------
             // ② 近すぎる味方は減点
@@ -538,9 +540,9 @@ public void SetKickOffPlayer()
             }
 
             if (blocked)
-                score -= 80f;
+                score -= 30f;
             else
-                score += 30f;
+                score += 40f;
 
             //----------------------------------
             // 一番高い人を選ぶ
@@ -738,7 +740,7 @@ public void SetKickOffPlayer()
         float distance =
             Vector3.Distance(transform.position, opponentGoal.position);
 
-        score += 80f - distance * 2f;
+        score += 100f - distance * 1.2f;
 
         //----------------------------------
         // ② ゴール前が空いている
@@ -763,15 +765,19 @@ public void SetKickOffPlayer()
 
         if (blockCount == 0)
         {
-            score += 100f;
+            score += 80f;
         }
         else if (blockCount == 1)
         {
-            score += 30f;   // 1人くらいならシュートを狙う
+            score += 50f;
+        }
+        else if (blockCount == 2)
+        {
+            score += 10f;
         }
         else
         {
-            score -= 50f;   // 2人以上で初めて大きく減点
+            score -= 20f;
         }
 
         //----------------------------------
