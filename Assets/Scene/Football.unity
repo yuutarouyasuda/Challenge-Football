@@ -2409,7 +2409,7 @@ MonoBehaviour:
   lobHeight: 0.6
   stealCooldown: 0.5
   holdDistance: 1.2
-  holdHeight: 0.5
+  holdHeight: 0
   autoSwitchRange: 4
   autSwitchInterval: 0.2
 --- !u!1 &579587782
@@ -2464,7 +2464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &583874510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2949,7 +2949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &748156153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4949,11 +4949,8 @@ MonoBehaviour:
   - {fileID: 748156153}
   - {fileID: 2106489954}
   ball: {fileID: 579379397}
-  shootPower: 20
   shootDistance: 6
-  passPower: 12
   passCooldown: 1
-  moveSpeed: 5
   dashSpeed: 8
   rotateSpeed: 360
 --- !u!1 &1376904856
@@ -6383,7 +6380,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2106489954
 MonoBehaviour:
   m_ObjectHideFlags: 0

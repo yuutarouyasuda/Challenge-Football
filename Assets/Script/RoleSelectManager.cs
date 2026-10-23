@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections;
 public class RoleSelectManager : MonoBehaviour
 {
     [SerializeField] private TMP_Dropdown fwDropdown;
     [SerializeField] private TMP_Dropdown mfDropdown;
     [SerializeField] private TMP_Dropdown dfDropdown;
+    [SerializeField] private TextMeshProUGUI messageText;
 
     private PlayerData[] selectedPlayers;
     void Start()
@@ -15,9 +17,16 @@ public class RoleSelectManager : MonoBehaviour
             Debug.Log("ëIéËÇ™ëIëÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒ");
             return;
         }
+
+        messageText.text = "";
+
         selectedPlayers=TeamSelectManager.SelectedPlayers.ToArray();
 
         SetDropdown();
+
+        fwDropdown.onValueChanged.AddListener(OnDropdownChanged);
+        mfDropdown.onValueChanged.AddListener(OnDropdownChanged);
+        dfDropdown.onValueChanged.AddListener(OnDropdownChanged);
     }
   
     private void SetDropdown()
@@ -50,9 +59,13 @@ public class RoleSelectManager : MonoBehaviour
             fwDropdown.value==dfDropdown.value||
             mfDropdown.value==dfDropdown.value)
         {
-            Debug.Log("ìØÇ∂ëIéËÇï°êîÇÃñäÑÇ…ê›íËÇ≈Ç´Ç‹ÇπÇÒ");
+            messageText.text = "Can't choose the same player";
+            StartCoroutine(HideMessage(2f));
             return;
         }
+
+        messageText.text = "";
+
         TeamDataManager.Instance.forward = selectedPlayers[fwDropdown.value];
         TeamDataManager.Instance.midfielder = selectedPlayers[mfDropdown.value];
         TeamDataManager.Instance.defender = selectedPlayers[dfDropdown.value];
@@ -62,5 +75,17 @@ public class RoleSelectManager : MonoBehaviour
         Debug.Log("DF: " + TeamDataManager.Instance.defender.playerName);
 
         SceneManager.LoadScene("Football");
+    }
+    private void OnDropdownChanged(int value)
+    {
+        if (fwDropdown.value != mfDropdown.value && fwDropdown.value != dfDropdown.value && mfDropdown.value != dfDropdown.value) ;
+        {
+            messageText.text = "";
+        }
+    }
+    private IEnumerator HideMessage(float time)
+    {
+        yield return new WaitForSeconds(time);
+        messageText.text = "";
     }
 }
