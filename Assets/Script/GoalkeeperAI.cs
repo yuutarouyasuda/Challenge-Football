@@ -84,16 +84,14 @@ public class GoalkeeperAI : MonoBehaviour
         TryDiveSave();
     }
 
-    //------------------------------------------------
     // GK移動
-    //------------------------------------------------
     private void MoveGoalkeeper()
     {
-        if (!agent.enabled)
-            return;
+        if (isDiving) return;
 
-        if (!agent.isOnNavMesh)
-            return;
+        if (!agent.enabled) return;
+
+        if (!agent.isOnNavMesh) return;
 
         if (ball.PassTarget == this)
         {
@@ -259,16 +257,10 @@ public class GoalkeeperAI : MonoBehaviour
             return;
         }
 
-        Vector3 diveDir;
+        Vector3 target =new Vector3(ownGoal.position.x,0,predictZ);
 
-        if (predictZ > transform.position.z)
-        {
-            diveDir = (transform.forward + Vector3.forward).normalized;
-        }
-        else
-        {
-            diveDir = (transform.forward + Vector3.back).normalized;
-        }
+        Vector3 diveDir =
+            (target - transform.position).normalized;
 
         StartCoroutine(DiveCoroutine(diveDir));
     }
@@ -281,17 +273,21 @@ public class GoalkeeperAI : MonoBehaviour
         Rigidbody body = GetComponent<Rigidbody>();
 
         body.linearVelocity = Vector3.zero;
+
+        transform.forward = dir;
+
         body.AddForce(dir.normalized * diveSpeed, ForceMode.VelocityChange);
 
         yield return new WaitForSeconds(0.35f);
 
         agent.enabled = true;
 
+        agent.Warp(transform.position);
+        agent.ResetPath();
+
         diveTimer = diveCooldown;
     }
-    //------------------------------------------------
     // キャッチ
-    //------------------------------------------------
     private void TryCatchBall()
     {
         if (pickupTimer > 0)
@@ -411,9 +407,7 @@ public class GoalkeeperAI : MonoBehaviour
         hasBall = false;
         pickupTimer = pickupCooldown;
     }
-    //------------------------------------------------
     // 味方へパス
-    //------------------------------------------------
     private IEnumerator PassCoroutine()
     {
         Debug.Log("PassCoroutine 開始");
@@ -447,9 +441,7 @@ public class GoalkeeperAI : MonoBehaviour
             GoalKickManager.Instance.EndGoalKick();
     }
 
-    //------------------------------------------------
     // 一番近い味方を探す
-    //------------------------------------------------
     private Transform FindBestPassTarget()
     {
         Transform best = null;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -42,7 +43,7 @@ public class EnemyAI : MonoBehaviour
 
     private float tackleTimer;
 
-    public float Dribble => playerData.dribble;
+    //public float Dribble => playerData.dribble;
     private EnemyManager enemyManager;
     private float passTimer = 0f;
     private BallController currentBall;
@@ -109,7 +110,9 @@ public class EnemyAI : MonoBehaviour
         }
         PlayerController[] players =
     FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-        agent.speed = playerData.speed;
+        
+        agent.speed = MoveSpeed*0.8f;
+
         if (escapePassBonusTimer > 0f)
         {
             escapePassBonusTimer -= Time.deltaTime;
@@ -201,9 +204,8 @@ public class EnemyAI : MonoBehaviour
         {
             passTimer -= Time.deltaTime;
             //Debug.Log(passTimer);   
-            float distance = Vector3.Distance(
-                transform.position,
-                opponentGoal.position);
+            //float distance = Vector3.Distance(transform.position,opponentGoal.position);
+
             EnemyAI receiver = FindBestReceiver();
 
             float shootScore = EvaluateShoot();
@@ -259,10 +261,7 @@ public class EnemyAI : MonoBehaviour
 
                     transform.forward = shootDir.normalized;
 
-                    currentBall.Kick(
-    shootDir.normalized,
-    playerData.kick,
-    false);
+                    currentBall.Kick(shootDir.normalized,KickPower,false);
 
                     currentBall = null;
                     noPickupTimer = 0.5f;
@@ -282,67 +281,107 @@ public class EnemyAI : MonoBehaviour
                     break;
 
                 case ActionType.Dribble:
-
-                    agent.SetDestination(opponentGoal.position);
-
-                    break;
-                case ActionType.Escape:
-
-                    if (!isEscaping)
                     {
-                        Vector3 left = -transform.right * 5f;
-                        Vector3 right = transform.right * 5f;
-
-                        Vector3 leftPos = transform.position + left;
-                        Vector3 rightPos = transform.position + right;
-
-                        float leftScore = 0f;
-                        float rightScore = 0f;
+                        Vector3 avoid = Vector3.zero;
 
                         foreach (PlayerController player in players)
                         {
-                            leftScore += Vector3.Distance(leftPos, player.transform.position);
-                            rightScore += Vector3.Distance(rightPos, player.transform.position);
+                            Vector3 diff =
+                                transform.position - player.transform.position;
+
+                            float distance = diff.magnitude;
+
+                            if (distance < 4f)
+                            {
+                                avoid += diff.normalized * (4f - distance);
+                            }
                         }
+                        float avoidStrength = Mathf.Lerp(0.6f, 1.6f, Dribble / 100f);
 
-                        escapeTarget = (leftScore > rightScore) ? leftPos : rightPos;
+                        avoid *= avoidStrength;
 
-                        agent.SetDestination(escapeTarget);
-                        isEscaping = true;
-                    }
+                        Vector3 dir = (opponentGoal.position - transform.position).normalized;
 
-                    break;
-                case ActionType.Keep:
+                        float dribbleDistance = Mathf.Lerp(3f, 7f, Dribble / 100f);
+                        float goalDistance = Vector3.Distance(transform.position, opponentGoal.position);
 
-                    agent.ResetPath();
+                        float avoidPower = Mathf.Lerp(1f, 0.3f, Mathf.Clamp01((30f - goalDistance) / 30f));
 
-                    PlayerController nearest = null;
-                    float nearestDistance = Mathf.Infinity;
+                        Vector3 target = transform.position + (dir + avoid * avoidPower).normalized * dribbleDistance;
 
-                    foreach (PlayerController player in players)
-                    {
-                        float d = Vector3.Distance(
-                            transform.position,
-                            player.transform.position);
 
-                        if (d < nearestDistance)
+
+                        Vector3 moveDir = target - transform.position;
+                        moveDir.y = 0;
+
+                        if (moveDir.sqrMagnitude > 0.1f)
                         {
-                            nearestDistance = d;
-                            nearest = player;
+                            transform.forward = Vector3.Lerp(
+                                transform.forward,
+                                moveDir.normalized,
+                                Time.deltaTime * 8f);
                         }
+                        break;
                     }
-
-                    if (nearest != null)
+                case ActionType.Escape:
                     {
-                        Vector3 dir =
-                            transform.position - nearest.transform.position;
+                        if (!isEscaping)
+                        {
+                            Vector3 left = -transform.right * 5f;
+                            Vector3 right = transform.right * 5f;
 
-                        dir.y = 0;
+                            Vector3 leftPos = transform.position + left;
+                            Vector3 rightPos = transform.position + right;
 
-                        transform.forward = dir.normalized;
+                            float leftScore = 0f;
+                            float rightScore = 0f;
+
+                            foreach (PlayerController player in players)
+                            {
+                                leftScore += Vector3.Distance(leftPos, player.transform.position);
+                                rightScore += Vector3.Distance(rightPos, player.transform.position);
+                            }
+
+                            escapeTarget = (leftScore > rightScore) ? leftPos : rightPos;
+
+                            agent.SetDestination(escapeTarget);
+                            isEscaping = true;
+                        }
+
+                        break;
                     }
+                case ActionType.Keep:
+                    {
+                        agent.ResetPath();
 
-                    break;
+                        PlayerController nearest = null;
+                        float nearestDistance = Mathf.Infinity;
+
+                        foreach (PlayerController player in players)
+                        {
+                            float d = Vector3.Distance(
+                                transform.position,
+                                player.transform.position);
+
+                            if (d < nearestDistance)
+                            {
+                                nearestDistance = d;
+                                nearest = player;
+                            }
+                        }
+
+                        if (nearest != null)
+                        {
+                            Vector3 dir =
+                                transform.position - nearest.transform.position;
+
+                            dir.y = 0;
+
+                            transform.forward = dir.normalized;
+                        }
+
+                        break;
+                    }
             }
         }
         if (currentBall != null && currentBall.Owner == this)
@@ -377,10 +416,7 @@ public class EnemyAI : MonoBehaviour
 
         dir.y = 0;
 
-        currentBall.Kick(
-            dir.normalized,
-playerData.kick,
-false);
+        currentBall.Kick(dir.normalized,KickPower,false,receiver);
 
         currentBall = null;
 
@@ -476,32 +512,24 @@ public void SetKickOffPlayer()
 
             float score = 0f;
 
-            //----------------------------------
             // á@ ÉSÅ[ÉãÇ…ãﬂÇ¢ÇŸÇ«â¡ì_
-            //----------------------------------
             float goalDistance =
                 Vector3.Distance(mate.transform.position, opponentGoal.position);
 
             score -= goalDistance*0.5f;
 
-            //----------------------------------
             // áA ãﬂÇ∑Ç¨ÇÈñ°ï˚ÇÕå∏ì_
-            //----------------------------------
             float myDistance =
                 Vector3.Distance(transform.position, mate.transform.position);
 
             if (myDistance < 4f)
                 score -= 80f;
 
-            //----------------------------------
             // áB âìÇ∑Ç¨ÇÈñ°ï˚Ç‡è≠Çµå∏ì_
-            //----------------------------------
             if (myDistance > 20f)
                 score -= 30f;
 
-            //----------------------------------
             // áC ìGÇ©ÇÁó£ÇÍÇƒÇ¢ÇÈÇŸÇ«â¡ì_
-            //----------------------------------
             PlayerController[] players =
                 FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
@@ -519,9 +547,7 @@ public void SetKickOffPlayer()
 
             score += nearestEnemy * 5f;
 
-            //----------------------------------
             // áD ÉpÉXÉRÅ[ÉXÇ™í ÇÈÇ©
-            //----------------------------------
             bool blocked = false;
 
             foreach (PlayerController player in players)
@@ -543,9 +569,7 @@ public void SetKickOffPlayer()
             else
                 score += 40f;
 
-            //----------------------------------
             // àÍî‘çÇÇ¢êlÇëIÇ‘
-            //----------------------------------
             if (score > bestScore)
             {
                 bestScore = score;
@@ -554,6 +578,60 @@ public void SetKickOffPlayer()
         }
         bestPassScore = bestScore;
         return best;
+    }
+    public float MoveSpeed
+    {
+        get
+        {
+            if (playerData == null)
+                return 5f;
+
+            return Mathf.Lerp(3f, 8f, playerData.speed / 100f);
+        }
+    }
+
+    public float KickPower
+    {
+        get
+        {
+            if (playerData == null)
+                return 15f;
+
+            return Mathf.Lerp(8f, 25f, playerData.kick / 100f);
+        }
+    }
+
+    public float Dribble
+    {
+        get
+        {
+            if (playerData == null)
+                return 50f;
+
+            return playerData.dribble;
+        }
+    }
+
+    public float Defence
+    {
+        get
+        {
+            if (playerData == null)
+                return 50f;
+
+            return playerData.defence;
+        }
+    }
+
+    public float TackleRange
+    {
+        get
+        {
+            if (playerData == null)
+                return tackleRange;
+
+            return Mathf.Lerp(1f, 2.5f, Defence / 100f);
+        }
     }
     private void PressMove(BallController ballController)
     {
@@ -591,7 +669,7 @@ public void SetKickOffPlayer()
         {
             float distance=Vector3.Distance(transform.position, ballController.Owner.transform.position);
 
-            if(distance<tackleRange)
+            if(distance<TackleRange)
             {
                 TryTackle(ballController);
             }
@@ -704,10 +782,7 @@ public void SetKickOffPlayer()
             yield return null;
         }
 
-        currentBall.Kick(
-    dir.normalized,
-    playerData.kick,
-    false);
+        currentBall.Kick(dir.normalized,KickPower,false);
 
         ChallengeManager.Instance.OnPassKick(false);
 
@@ -733,17 +808,13 @@ public void SetKickOffPlayer()
 
         float score = 0f;
 
-        //----------------------------------
         // á@ ÉSÅ[ÉãÇ…ãﬂÇ¢ÇŸÇ«çÇï]âø
-        //----------------------------------
         float distance =
             Vector3.Distance(transform.position, opponentGoal.position);
 
         score += 100f - distance * 1.2f;
 
-        //----------------------------------
         // áA ÉSÅ[ÉãëOÇ™ãÛÇ¢ÇƒÇ¢ÇÈ
-        //----------------------------------
         PlayerController[] players =
             FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
@@ -779,9 +850,7 @@ public void SetKickOffPlayer()
             score -= 20f;
         }
 
-        //----------------------------------
         // áB ÉSÅ[ÉãÇ…Ç©Ç»ÇËãﬂÇ¢Ç»ÇÁÇ≥ÇÁÇ…â¡ì_
-        //----------------------------------
         if (distance < 15f)
             score += 100f;
 
@@ -794,17 +863,13 @@ public void SetKickOffPlayer()
     {
         float score = 0f;
 
-        //----------------------------------
         // á@ ÉSÅ[ÉãÇ…ãﬂÇ¢ÇŸÇ«ÉhÉäÉuÉãÇµÇΩÇ¢
-        //----------------------------------
         float goalDistance =
             Vector3.Distance(transform.position, opponentGoal.position);
 
         score += 100f - goalDistance;
 
-        //----------------------------------
         // áA ëOï˚Ç…ìGÇ™Ç¢ÇΩÇÁå∏ì_
-        //----------------------------------
         PlayerController[] players =
             FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
@@ -829,9 +894,7 @@ public void SetKickOffPlayer()
             }
         }
 
-        //----------------------------------
         // áB é¸àÕÇ…ìGÇ™è≠Ç»Ç¢ÇŸÇ«â¡ì_
-        //----------------------------------
         int nearbyEnemy = 0;
 
         foreach (PlayerController player in players)
@@ -847,9 +910,7 @@ public void SetKickOffPlayer()
 
         score -= nearbyEnemy * 40f;
 
-        //----------------------------------
         // áC ÉSÅ[Éãï˚å¸Ç™ãÛÇ¢ÇƒÇ¢ÇÈ
-        //----------------------------------
         Vector3 goalDir =
             (opponentGoal.position - transform.position).normalized;
 
@@ -882,9 +943,7 @@ public void SetKickOffPlayer()
         PlayerController[] players =
             FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
-        //----------------------------------
         // ëOï˚Ç…ìGÇ™Ç¢ÇÈÇŸÇ«ì¶Ç∞ÇΩÇ¢
-        //----------------------------------
         foreach (PlayerController player in players)
         {
             Vector3 dir =
@@ -906,9 +965,7 @@ public void SetKickOffPlayer()
             }
         }
 
-        //----------------------------------
         // ÉSÅ[Éãï˚å¸Ç™ç«Ç™ÇÍÇƒÇ¢ÇΩÇÁì¶Ç∞ÇΩÇ¢
-        //----------------------------------
         bool blocked = false;
 
         foreach (PlayerController player in players)

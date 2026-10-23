@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382156996f14d114a84efdbd251fdb34, type: 3}
   m_Name: EnemyDF
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  playerName: 
+  playerName: EnemyDF
   speed: 65
   kick: 60
   dribble: 55

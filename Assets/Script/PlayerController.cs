@@ -48,7 +48,8 @@ public class PlayerController : MonoBehaviour
     private NavMeshAgent agent;
     private Vector3 lastPosition;
     private bool isKickInPlayer;
-
+    [SerializeField] private bool isEnemy;
+    public bool IsEnemy => isEnemy;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -420,22 +421,29 @@ public class PlayerController : MonoBehaviour
 
         Vector3 dir = GetMouseDirection();
 
-        // 全員の受け手フラグをOFF
-        TeammateAI_New[] mates =
+        // AI味方の受け手フラグをOFF
+        TeammateAI_New[] aiMates =
             FindObjectsByType<TeammateAI_New>(FindObjectsSortMode.None);
 
-        foreach (TeammateAI_New mate in mates)
+        foreach (TeammateAI_New mate in aiMates)
         {
             mate.isReceiver = false;
         }
 
-        // 一番近い味方を受け手にする
+        // 一番近い味方を探す（GKも含む）
         float best = float.MaxValue;
-        TeammateAI_New receiver = null;
+        PlayerController receiver = null;
 
-        foreach (TeammateAI_New mate in mates)
+        PlayerController[] players =
+            FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+
+        foreach (PlayerController mate in players)
         {
-            if (mate.GetComponent<PlayerController>() == this)
+            if (mate == this)
+                continue;
+
+            // 味方だけ
+            if (mate.IsEnemy != IsEnemy)
                 continue;
 
             float d = Vector3.Distance(
@@ -451,9 +459,15 @@ public class PlayerController : MonoBehaviour
 
         if (receiver != null)
         {
-            receiver.isReceiver = true;
+            // AI選手なら受け手フラグをON
+            TeammateAI_New ai = receiver.GetComponent<TeammateAI_New>();
 
-            passTarget = receiver.GetComponent<PlayerController>();
+            if (ai != null)
+            {
+                ai.isReceiver = true;
+            }
+
+            passTarget = receiver;
         }
 
         GroundPass(dir, groundKickPower);

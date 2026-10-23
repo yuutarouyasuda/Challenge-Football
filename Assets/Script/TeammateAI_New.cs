@@ -612,10 +612,7 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
             if (mate == null || mate == this)
                 continue;
 
-            float d =
-                Vector3.Distance(
-                    mate.transform.position,
-                    ball.transform.position);
+            float d =Vector3.Distance(mate.transform.position,ball.transform.position);
 
             if (d < myDistance)
             {
@@ -657,11 +654,7 @@ for (float radius = 6f; radius <= 10f; radius += 2f)
             return;
 
 
-        float success =
-            Mathf.Lerp(
-                0.4f,
-                0.95f,
-                playerData.defence / 100f);
+        float success =Mathf.Lerp(0.4f,0.95f,playerData.defence / 100f);
 
 
         if (Random.value > success)
