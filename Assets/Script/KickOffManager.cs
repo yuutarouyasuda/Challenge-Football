@@ -19,9 +19,7 @@ public class KickOffManager : MonoBehaviour
     public void StartKickOff(MonoBehaviour player)
     {
         IsKickOff = true;
-        Debug.Log(
-      "KickOff Player : " + player.name
-  );
+        Debug.Log("KickOff Player : " + player.name);
         GameManager.Instance.StartKickOffState();
 
         ball.transform.position = ballPoint.position;

@@ -87,6 +87,12 @@ public class GoalkeeperAI : MonoBehaviour
     // GKˆÚ“®
     private void MoveGoalkeeper()
     {
+        if(GameManager.Instance.IsKickOff)
+        {
+            agent.SetDestination(ownGoal.position);
+            return;
+        }
+
         if (isDiving) return;
 
         if (!agent.enabled) return;

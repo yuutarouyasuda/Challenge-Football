@@ -374,8 +374,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 525501553}
-  - {fileID: 1944933098}
   - {fileID: 1803182366}
+  - {fileID: 1944933098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &66523190
@@ -761,8 +761,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 144973438}
-  - {fileID: 1268239319}
   - {fileID: 66523191}
+  - {fileID: 1268239319}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &170149879
@@ -1156,6 +1156,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &283475055 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4791538761258917077, guid: cf7b3d3ec7ab8684e942c2e6e8d80701, type: 3}
+  m_PrefabInstance: {fileID: 4727726134439418799}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &283475064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 283475055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae9bf16765b0824cad519f7dc4dd323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 5
+  dashSpeed: 8
+  defaultDribble: 50
+  rotateSpeed: 10
+  maxGroundKickPower: 15
+  GroundKickchargeSpeed: 10
+  maxLobKickPower: 30
+  LobKickChargeSpeed: 20
+  pickupCooldown: 0.3
+  groundKickSlider: {fileID: 476294813}
+  lobKickSlider: {fileID: 476294813}
+  tackleRange: 1.5
+  tackleCooldown: 1
+  tackleAngle: 60
+  tackleDash: 2
+  kickOffMoveRadius: 3
+  IsControlled: 0
+  isEnemy: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -3205,6 +3240,10 @@ PrefabInstance:
       propertyPath: isEnemy
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7381614341325159213, guid: cf7b3d3ec7ab8684e942c2e6e8d80701, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4027,22 +4066,11 @@ MonoBehaviour:
   - {fileID: 488708329}
   - {fileID: 896785680}
   - {fileID: 823869375}
-  goalkeeper: {fileID: 996609811}
+  goalkeeper: {fileID: 0}
   ball: {fileID: 579379398}
   cursor: {fileID: 614144031}
   cursorHeight: 2
   nextCursor: {fileID: 1978208491}
---- !u!114 &996609811 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7381614341325159213, guid: cf7b3d3ec7ab8684e942c2e6e8d80701, type: 3}
-  m_PrefabInstance: {fileID: 4727726134439418799}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cae9bf16765b0824cad519f7dc4dd323, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &1007078826
 GameObject:
   m_ObjectHideFlags: 0
@@ -4806,7 +4834,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   homeScore: 0
   awayScore: 0
-  matchTime: 60
+  matchTime: 300
   ballSpawnPoint: {fileID: 1807795085}
   homeScoreText: {fileID: 1098605103}
   awayScoreText: {fileID: 893488852}
@@ -5588,7 +5616,7 @@ MonoBehaviour:
   ball: {fileID: 579379398}
   homeGoalKickPoint: {fileID: 1268239319}
   awayGoalKickPoint: {fileID: 1944933098}
-  homeGoalKeeper: {fileID: 996609811}
+  homeGoalKeeper: {fileID: 0}
   awayGoalKeeper: {fileID: 774579992}
   goalKeeperPosition: {fileID: 263438623}
   dfGoalKickPosition: {fileID: 1658744354}
@@ -6861,7 +6889,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4791538761258917077, guid: cf7b3d3ec7ab8684e942c2e6e8d80701, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 283475064}
   m_SourcePrefab: {fileID: 100100000, guid: cf7b3d3ec7ab8684e942c2e6e8d80701, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
