@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BallController : MonoBehaviour
@@ -14,6 +15,8 @@ public class BallController : MonoBehaviour
     [SerializeField] private float holdHeight = 0.05f;
     [SerializeField] private float autoSwitchRange = 4f;
     [SerializeField] private float autSwitchInterval = 0.2f;
+    [SerializeField] private float lastKickerIgnoreTime = 0.5f;
+    private float lastKickerTimer;
     private float autoSwitchTimer;
     public MonoBehaviour PassTarget { get; private set; }
     private float stealTimer;
@@ -107,6 +110,15 @@ public class BallController : MonoBehaviour
         if (stealTimer > 0)
         {
             stealTimer -= Time.deltaTime;
+        }
+        if(lastKickerTimer > 0)
+        {
+            lastKickerTimer -= Time.deltaTime;
+
+            if(lastKickerTimer <= 0)
+            {
+                LastKicker = null;
+            }
         }
         if (Owner == null)
         {
@@ -240,7 +252,7 @@ public class BallController : MonoBehaviour
             GoalKickManager.Instance.EndGoalKick();
         }
         LastKicker = Owner;
-
+        lastKickerTimer = lastKickerIgnoreTime;
         PassTarget = target;
         Debug.Log("Kick");
         ClearOwner();
@@ -273,7 +285,7 @@ public class BallController : MonoBehaviour
 
         EnemyAI enemy = collision.collider.GetComponentInParent<EnemyAI>();
 
-        if (enemy != null && enemy != LastKicker)
+        if (enemy != null)
         {
             SetOwner(enemy);
             return;
@@ -281,7 +293,7 @@ public class BallController : MonoBehaviour
 
         PlayerController player = collision.collider.GetComponentInParent<PlayerController>();
 
-        if (player != null && player != LastKicker)
+        if (player != null)
         {
             SetOwner(player);
         }

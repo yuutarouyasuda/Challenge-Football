@@ -791,7 +791,7 @@ Transform:
   m_GameObject: {fileID: 170149879}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.10897, y: -1.82445, z: -8.80419}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2448,6 +2448,7 @@ MonoBehaviour:
   holdHeight: 0.25
   autoSwitchRange: 4
   autSwitchInterval: 0.2
+  lastKickerIgnoreTime: 0.5
 --- !u!1 &579587782
 GameObject:
   m_ObjectHideFlags: 0
@@ -5616,7 +5617,7 @@ MonoBehaviour:
   ball: {fileID: 579379398}
   homeGoalKickPoint: {fileID: 1268239319}
   awayGoalKickPoint: {fileID: 1944933098}
-  homeGoalKeeper: {fileID: 0}
+  homeGoalKeeper: {fileID: 283475064}
   awayGoalKeeper: {fileID: 774579992}
   goalKeeperPosition: {fileID: 263438623}
   dfGoalKickPosition: {fileID: 1658744354}
