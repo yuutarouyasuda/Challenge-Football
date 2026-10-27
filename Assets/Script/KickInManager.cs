@@ -113,6 +113,7 @@ public class KickInManager : MonoBehaviour
         }
         else if (pc != null)
         {
+            GameManager.Instance.ChangePlayer(pc);
             pc.StartKickInPlayer();
         }
         Debug.Log(player.name + " ‚ªÄŠJ");

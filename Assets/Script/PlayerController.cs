@@ -310,7 +310,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (GameManager.Instance.IskickIn) return;
+        if (GameManager.Instance.IskickIn&&!isKickInPlayer) return;
 
         if (pickupTimer > 0)
             return;
